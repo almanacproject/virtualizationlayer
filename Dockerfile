@@ -6,6 +6,9 @@ RUN mkdir -p /opt/prs/app
 WORKDIR /opt/prs/app
 
 COPY . /opt/prs/app
+
+RUN rm -f config.local.js
+
 RUN npm build
 
 ENV NODE_ENV=production \

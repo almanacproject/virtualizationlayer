@@ -81,6 +81,10 @@ It is now ' + now.toISOString() + '.\n\
 	},
 
 	init: function() {
+		almanac.basicHttp.npmlogPrefix = 'VL';
+		almanac.basicHttp.serverSignature = 'ALMANAC VirtualizationLayer ' + almanac.version + ' / ' + almanac.basicHttp.serverSignature;
+		almanac.basicHttp.csp = "default-src 'self'; connect-src 'self' ws:; font-src 'self' fonts.gstatic.com; style-src 'self' fonts.googleapis.com";	//TODO: Reduce white-list
+
 		almanac.routes['virtualizationLayerInfo'] = almanac.serveInfo;	//Requests the public address of this VirtualizationLayer instance and other info
 
 		require('./almanac-peering.js')(almanac);

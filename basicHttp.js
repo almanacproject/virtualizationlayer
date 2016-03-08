@@ -20,13 +20,16 @@ var basicHttp = {
 
 	serverSignature: 'Node.js ' + process.version + ' / ' + os.type() + ' ' + os.release() + ' ' + os.arch(),
 
+	csp: "default-src 'self'",
+
 	npmlog: null,
+	npmlogPrefix: '',
 
 	log: function (req, res) {
 		var message = (new Date()).toISOString() + '\t' + req.connection.remoteAddress + '\t' + res.statusCode + '\t"' + req.method + ' ' + req.url + '"\t"' +
 			(req.headers['user-agent'] || '') + '"';
 		if (basicHttp.npmlog) {
-			basicHttp.npmlog.http('VL', message);
+			basicHttp.npmlog.http(basicHttp.npmlogPrefix, message);
 		} else {
 			console.log('HTTP:\t' + message);
 		}
@@ -38,6 +41,7 @@ var basicHttp = {
 			'Content-Type': 'text/html; charset=UTF-8',
 			'Date': now.toUTCString(),
 			'Server': basicHttp.serverSignature,
+			'Content-Security-Policy': basicHttp.csp,
 		});
 		res.end('<!DOCTYPE html>\n\
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en-GB" lang="en-GB">\n\
@@ -57,7 +61,7 @@ It is now ' + now.toISOString() + '.\n\
 </ul>\n\
 </body>\n\
 </html>\n\
- ');
+');
 	},
 
 	serve400: function (req, res) {
@@ -66,6 +70,7 @@ It is now ' + now.toISOString() + '.\n\
 				'Content-Type': 'text/html; charset=UTF-8',
 				'Date': (new Date()).toUTCString(),
 				'Server': basicHttp.serverSignature,
+				'Content-Security-Policy': basicHttp.csp,
 			});
 		}
 		res.end('<!DOCTYPE html>\n\
@@ -79,7 +84,7 @@ It is now ' + now.toISOString() + '.\n\
 <p>Your browser sent a request that this server could not understand.</p>\n\
 </body>\n\
 </html>\n\
- ');
+');
 	},
 
 	serve404: function (req, res) {
@@ -89,6 +94,7 @@ It is now ' + now.toISOString() + '.\n\
 				'Content-Type': 'text/html; charset=UTF-8',
 				'Date': (new Date()).toUTCString(),
 				'Server': basicHttp.serverSignature,
+				'Content-Security-Policy': basicHttp.csp,
 			});
 		}
 		res.end('<!DOCTYPE html>\n\
@@ -103,7 +109,7 @@ It is now ' + now.toISOString() + '.\n\
 	basicHttp.escapeHtml(req.url) + '</kbd> was not found on this server.</p>\n\
 </body>\n\
 </html>\n\
- ');
+');
 	},
 
 	serve405: function (req, res, allowedMethods) {
@@ -113,6 +119,7 @@ It is now ' + now.toISOString() + '.\n\
 				'Date': (new Date()).toUTCString(),
 				'Server': basicHttp.serverSignature,
 				'Allow': allowedMethods,
+				'Content-Security-Policy': basicHttp.csp,
 			});
 		}
 		res.end('<!DOCTYPE html>\n\
@@ -126,7 +133,7 @@ It is now ' + now.toISOString() + '.\n\
 <p>The requested method <kbd>' + basicHttp.escapeHtml(req.method) + '</kbd> is not allowed at this URL.</p>\n\
 </body>\n\
 </html>\n\
- ');
+');
 	},
 
 	serve406: function (req, res) {
@@ -135,6 +142,7 @@ It is now ' + now.toISOString() + '.\n\
 				'Content-Type': 'text/html; charset=UTF-8',
 				'Date': (new Date()).toUTCString(),
 				'Server': basicHttp.serverSignature,
+				'Content-Security-Policy': basicHttp.csp,
 			});
 		}
 		res.end('<!DOCTYPE html>\n\
@@ -148,12 +156,12 @@ It is now ' + now.toISOString() + '.\n\
 <p>The content-type is not acceptable for this URL.</p>\n\
 </body>\n\
 </html>\n\
- ');
+');
 	},
 
 	serve500: function (req, res, ex) {
 		if (basicHttp.npmlog) {
-			basicHttp.npmlog.error('VL', ex);
+			basicHttp.npmlog.error(basicHttp.npmlogPrefix, ex);
 		} else {
 			console.error(ex);
 		}
@@ -162,6 +170,7 @@ It is now ' + now.toISOString() + '.\n\
 				'Content-Type': 'text/html; charset=UTF-8',
 				'Date': (new Date()).toUTCString(),
 				'Server': basicHttp.serverSignature,
+				'Content-Security-Policy': basicHttp.csp,
 			});
 		}
 		res.end('<!DOCTYPE html>\n\
@@ -176,7 +185,7 @@ It is now ' + now.toISOString() + '.\n\
 <pre>' + ex + '</pre>\n\
 </body>\n\
 </html>\n\
- ');
+');
 	},
 
 	serve503: function (req, res) {
@@ -185,6 +194,7 @@ It is now ' + now.toISOString() + '.\n\
 				'Content-Type': 'text/html; charset=UTF-8',
 				'Date': (new Date()).toUTCString(),
 				'Server': basicHttp.serverSignature,
+				'Content-Security-Policy': basicHttp.csp,
 			});
 		}
 		res.end('<!DOCTYPE html>\n\
@@ -198,12 +208,17 @@ It is now ' + now.toISOString() + '.\n\
 <p>The service you are requesting is temporarily unavailable.</p>\n\
 </body>\n\
 </html>\n\
- ');
+');
 	},
 
 	serveStaticFile: function (req, res) {
-		if ((/^(\/[a-z0-9_-]{1,64})?\/[a-z0-9_-]{1,128}(\.[a-z0-9]{2,4})?\.[a-z]{2,4}$/i).test(req.url) && (!(/\.\./).test(req.url))) {
-			var myPath = './static' + req.url;
+		var url = req.url,
+			qn = url.indexOf('?');
+		if (qn >= 0) {	//No query string
+			url = url.substring(0, qn);
+		}
+		if ((/^(\/[a-z0-9_-]{1,64})?\/[a-z0-9_-]{1,128}(\.[a-z0-9]{2,4})?\.[a-z0-9]{2,4}$/i).test(url) && (!(/\.\./).test(url))) {
+			var myPath = './static' + url;
 			fs.stat(myPath, function (err, stats) {
 				if ((!err) && stats.isFile()) {
 					var ext = path.extname(myPath),
@@ -214,6 +229,7 @@ It is now ' + now.toISOString() + '.\n\
 							'.jpg': 'image/jpeg',
 							'.js': 'application/javascript',
 							'.json': 'application/json',
+							'.mp3': 'audio/mpeg',
 							'.png': 'image/png',
 							'.svg': 'image/svg+xml',
 							'.txt': 'text/plain',
@@ -224,7 +240,8 @@ It is now ' + now.toISOString() + '.\n\
 					if (modifiedDate === req.headers['if-modified-since']) {
 						res.writeHead(304, {
 							'Content-Type': ext && mimes[ext] ? mimes[ext] : 'application/octet-stream',
-							'Date': (new Date()).toUTCString()
+							'Date': (new Date()).toUTCString(),
+							'Content-Security-Policy': basicHttp.csp,
 						});
 						res.end();
 					} else {
@@ -234,7 +251,8 @@ It is now ' + now.toISOString() + '.\n\
 							'Cache-Control': 'public, max-age=86400',
 							'Date': (new Date()).toUTCString(),
 							'Last-Modified': modifiedDate,
-							'Server': basicHttp.serverSignature
+							'Server': basicHttp.serverSignature,
+							'Content-Security-Policy': basicHttp.csp,
 						});
 						fs.createReadStream(myPath).pipe(res);
 					}

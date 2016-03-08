@@ -1,10 +1,12 @@
+"use strict";
+
 // the configuration parameters
-scral_url = "./scral";
-dfm_url = "./dfm";
-network_manager_url = "./linksmart/GetNetworkManagerStatus?method=getLocalServices";
-storage_manager_url = "./sm/help";
-resource_catalog_url = "./ResourceCatalogue/";
-dfl_url = "./dfl/api/data-fusion/v0.5.0/chains/"
+var scral_url = "./scral";
+var dfm_url = "./dfm";
+var network_manager_url = "./linksmart/GetNetworkManagerStatus?method=getLocalServices";
+var storage_manager_url = "./sm/help";
+var resource_catalog_url = "./ResourceCatalogue/";
+var dfl_url = "./dfl/api/data-fusion/v0.5.0/chains/";
 
 
 // the watchdog timer
@@ -15,14 +17,12 @@ var vlcConnectionTimer;
 var activeServicesCount = 0;
 var allServicesCount = 6;
 
-var client;
-
 $(document).ready(function() {
-	handleServiceCountUIUpdate()
+	handleServiceCountUIUpdate();
 	getDevicesCount();
 	getStatementCount();
 	getNetworkManagerStatus();
-	getStorageManagerStatus(); 
+	getStorageManagerStatus();
 	getResourceCatalogStatus();
 	getMqttState();
 	getDFLStatus();
@@ -42,37 +42,37 @@ $(document).ready(function() {
 // ------- Active services ---------------
 function incActiveServices()
 {
-    activeServicesCount++;
-    handleServiceCountUIUpdate()
+		activeServicesCount++;
+		handleServiceCountUIUpdate();
 }
 function decActiveServices()
 {
-    activeServicesCount--;
-    handleServiceCountUIUpdate()
+		activeServicesCount--;
+		handleServiceCountUIUpdate();
 }
 
 function handleServiceCountUIUpdate()
 {
-  $("#activeServicesCount").text(activeServicesCount);
-  if(activeServicesCount > allServicesCount*2/3)
-  {
-    $("#activeServicesCount").addClass("label-success");
-    $("#activeServicesCount").removeClass("label-warning");
-    $("#activeServicesCount").removeClass("label-danger");
-  }
-  else if(activeServicesCount > allServicesCount*1/3)
-  {
-    $("#activeServicesCount").removeClass("label-success");
-    $("#activeServicesCount").addClass("label-warning");
-    $("#activeServicesCount").removeClass("label-danger");
-  }
-  else
-  {
-    $("#activeServicesCount").removeClass("label-success");
-    $("#activeServicesCount").removeClass("label-warning");
-    $("#activeServicesCount").addClass("label-danger");
-  }
-    
+	$("#activeServicesCount").text(activeServicesCount);
+	if (activeServicesCount > allServicesCount * 2/3)
+	{
+		$("#activeServicesCount").addClass("label-success");
+		$("#activeServicesCount").removeClass("label-warning");
+		$("#activeServicesCount").removeClass("label-danger");
+	}
+	else if (activeServicesCount > allServicesCount * 1/3)
+	{
+		$("#activeServicesCount").removeClass("label-success");
+		$("#activeServicesCount").addClass("label-warning");
+		$("#activeServicesCount").removeClass("label-danger");
+	}
+	else
+	{
+		$("#activeServicesCount").removeClass("label-success");
+		$("#activeServicesCount").removeClass("label-warning");
+		$("#activeServicesCount").addClass("label-danger");
+	}
+
 }
 // ---------------------------------------
 
@@ -83,27 +83,26 @@ function getDevicesCount() {
 		type : "GET",
 		crossDomain : true,
 		success : function(data) {
-			deviceCount = data;
+			var deviceCount = data;
 			fillCountDevice(deviceCount);
-			if($("#scralStatus").text()=="Offline")
-			  incActiveServices();
+			if ($("#scralStatus").text()=="Offline")
+				incActiveServices();
 			$("#scralStatus").text("Online");
-			
+
 			//set the class
 			$("#scralStatus").removeClass("label-danger");
 			$("#scralStatus").addClass("label-success");
 		},
 		error : function() {
-			deviceCount = 0;
-			if($("#scralStatus").text()=="Online")
-			  decActiveServices();
+			var deviceCount = 0;
+			if ($("#scralStatus").text()=="Online")
+				decActiveServices();
 			fillCountDevice(deviceCount);
 			$("#scralStatus").text("Offline");
-			
+
 			//set the class
 			$("#scralStatus").addClass("label-danger");
 			$("#scralStatus").removeClass("label-success");
-			
 		}
 	});
 }
@@ -120,7 +119,7 @@ function fillCountDevice(count) {
 //web socket connection
 function websocketSetUp()
 {
-  try {
+	try {
 	var webSocket = new WebSocket('ws://' + location.host + '/ws/custom-events');
 
 	webSocket.onerror = function (event) {
@@ -131,8 +130,8 @@ function websocketSetUp()
 
 	webSocket.onopen = function () {
 			console.log('WebSocket connected');
-			if(vlcConnectionTimer)
-				clear(vlcConnectionTimer);
+			if (vlcConnectionTimer)
+				clearTimeout(vlcConnectionTimer);
 			webSocket.send("{\"topic\":\"/broadcast\"}");
 			handleAliveMessage();
 		};
@@ -143,47 +142,47 @@ function websocketSetUp()
 
 	webSocket.onmessage = function (event) {
 			console.log('WebSocket message: ' + event.data);
-			var jsonData = JSON.parse(event.data)
-			if(jsonData.payload && jsonData.payload.type == "ALIVE")
-			  handleAliveMessage();
+			var jsonData = JSON.parse(event.data);
+			if (jsonData.payload && jsonData.payload.type == "ALIVE")
+				handleAliveMessage();
 		};
-  } catch (ex) {
+	} catch (ex) {
 	console.log('Exception: ' + ex.message);
-  }	
+	}
 }
 
 //handle the Virtualization Layer Alive message
 function handleAliveMessage()
 {
-  //reset the watchdog timer
-  if(watchdog)
-    clearTimeout(watchdog)
-    
-  if($("#vlcStatus").text()=="Offline")
-			  incActiveServices();
-    
-  //set the alive status
-  $("#vlcStatus").text("Online");
-  
-  //set the class
-  $("#vlcStatus").removeClass("label-danger");
-  $("#vlcStatus").addClass("label-success");
-  
-  //start the watchdog
-  // the ALIVE interval is 60000ms to be safe we permit one missing alive message
-  watchdog = setTimeout(handleVLCOffline, 120000);
+	//reset the watchdog timer
+	if (watchdog)
+		clearTimeout(watchdog);
+
+	if ($("#vlcStatus").text()=="Offline")
+				incActiveServices();
+
+	//set the alive status
+	$("#vlcStatus").text("Online");
+
+	//set the class
+	$("#vlcStatus").removeClass("label-danger");
+	$("#vlcStatus").addClass("label-success");
+
+	//start the watchdog
+	// the ALIVE interval is 60000ms to be safe we permit one missing alive message
+	watchdog = setTimeout(handleVLCOffline, 120000);
 }
 
 function handleVLCOffline()
 {
-  //set the alive status
-  $("#vlcStatus").text("Offline");
-  
-  //set the class
-  $("#vlcStatus").addClass("label-danger");
-  $("#vlcStatus").removeClass("label-success");
-  
-  decActiveServices();
+	//set the alive status
+	$("#vlcStatus").text("Offline");
+
+	//set the class
+	$("#vlcStatus").addClass("label-danger");
+	$("#vlcStatus").removeClass("label-success");
+
+	decActiveServices();
 }
 
 //--------- END VLC -----------------------
@@ -196,25 +195,23 @@ function getStatementCount() {
 		crossDomain : true,
 		success : function(data) {
 			var jsonData = JSON.parse(data);
-			if(jsonData)
+			if (jsonData)
 				$("#dfmQueryCount").text(""+Object.keys(jsonData.EsperEngine).length);
-			if($("#dfmStatus").text()=="Offline")
-			  incActiveServices();
+			if ($("#dfmStatus").text()=="Offline")
+				incActiveServices();
 			$("#dfmStatus").text("Online");
 			//set the class
 			$("#dfmStatus").removeClass("label-danger");
 			$("#dfmStatus").addClass("label-success");
 		},
 		error : function() {
-			deviceCount = 0;
 			$("#dfmQueryCount").text("0");
-			if($("#dfmStatus").text()=="Online")
-			  decActiveServices();
+			if ($("#dfmStatus").text()=="Online")
+				decActiveServices();
 			$("#dfmStatus").text("Offline");
 			//set the class
 			$("#dfmStatus").addClass("label-danger");
 			$("#dfmStatus").removeClass("label-success");
-			
 		}
 	});
 }
@@ -288,23 +285,21 @@ function getStorageManagerStatus() {
 		type : "GET",
 		crossDomain : true,
 		success : function(data) {
-			console.log(data)
-			if($("#storageManagerStatus").text()=="Offline")
+			console.log(data);
+			if ($("#storageManagerStatus").text()=="Offline")
 				incActiveServices();
 			$("#storageManagerStatus").text("Online");
 			//set the class
 			$("#storageManagerStatus").removeClass("label-danger");
 			$("#storageManagerStatus").addClass("label-success");
-			
 		},
 		error : function() {
-			if($("#storageManagerStatus").text()=="Online")
+			if ($("#storageManagerStatus").text()=="Online")
 				decActiveServices();
 			$("#storageManagerStatus").text("Offline");
 			//set the class
 			$("#storageManagerStatus").addClass("label-danger");
 			$("#storageManagerStatus").removeClass("label-success");
-			
 		}
 	});
 }
@@ -317,23 +312,21 @@ function getResourceCatalogStatus() {
 		type : "GET",
 		crossDomain : true,
 		success : function(data) {
-			console.log(data)
-			if($("#resourceCatalogStatus").text()=="Offline")
+			console.log(data);
+			if ($("#resourceCatalogStatus").text()=="Offline")
 				incActiveServices();
 			$("#resourceCatalogStatus").text("Online");
 			//set the class
 			$("#resourceCatalogStatus").removeClass("label-danger");
 			$("#resourceCatalogStatus").addClass("label-success");
-			
 		},
 		error : function() {
-			if($("#resourceCatalogStatus").text()=="Online")
+			if ($("#resourceCatalogStatus").text()=="Online")
 				decActiveServices();
 			$("#resourceCatalogStatus").text("Offline");
 			//set the class
 			$("#resourceCatalogStatus").addClass("label-danger");
 			$("#resourceCatalogStatus").removeClass("label-success");
-			
 		}
 	});
 }

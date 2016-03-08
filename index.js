@@ -23,8 +23,6 @@ almanac.version = require('./package.json').version;
 almanac.log = require('npmlog');
 almanac.log.level = almanac.config.logLevel;
 basicHttp.npmlog = almanac.log;
-basicHttp.npmlogPrefix = 'VL';
-basicHttp.serverSignature = 'ALMANAC VirtualizationLayer ' + almanac.version + ' / ' + basicHttp.serverSignature;
 almanac.basicHttp = basicHttp;
 almanac.http = http;
 

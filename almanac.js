@@ -72,6 +72,28 @@ It is now ' + now.toISOString() + '.\n\
 		};
 	},
 
+	internalStatus: function () {
+		return {
+			version: almanac.version,
+			instanceName: almanac.config.hosts.instanceName,
+			publicUrl: almanac.config.hosts.virtualizationLayerPublicUrl,
+			hostname: almanac.os.hostname(),
+			virtualAddress: almanac.virtualAddress,
+			mqttVirtualAddress: almanac.mqttVirtualAddress,
+			mqttConnected: almanac.mqttClient && almanac.mqttClient.connected,
+			networkManagerUrl: almanac.config.hosts.networkManagerUrl,
+			storageManagerUrl: almanac.config.hosts.storageManagerUrl,
+			resourceCatalogueUrl: almanac.config.hosts.recourceCatalogueUrl,
+			scralUrl: almanac.config.hosts.scralUrl,
+			scralUiUrl: almanac.config.hosts.scralUiUrl,
+			dfmUrl: almanac.config.hosts.dfmUrl,
+			dflUrl: almanac.config.hosts.dflUrl,
+			server: almanac.basicHttp.serverSignature,
+			randomId: almanac.randomId,
+			nodejs: process.versions,
+		};
+	},
+
 	isMe: function (info) {
 		return info && info.randomId === almanac.randomId;
 	},
@@ -80,12 +102,19 @@ It is now ' + now.toISOString() + '.\n\
 		almanac.basicHttp.serveJson(req, res, almanac.info());
 	},
 
+	serveInternalStatus: function (req, res) {
+		almanac.basicHttp.serveJson(req, res, almanac.internalStatus());
+	},
+
 	init: function() {
 		almanac.basicHttp.npmlogPrefix = 'VL';
 		almanac.basicHttp.serverSignature = 'ALMANAC VirtualizationLayer ' + almanac.version + ' / ' + almanac.basicHttp.serverSignature;
 		almanac.basicHttp.csp = "default-src 'self'; connect-src 'self' ws:; font-src 'self' fonts.gstatic.com; style-src 'self' fonts.googleapis.com";	//TODO: Reduce white-list
 
 		almanac.routes['virtualizationLayerInfo'] = almanac.serveInfo;	//Requests the public address of this VirtualizationLayer instance and other info
+		if (almanac.config.exposeInternalStatus) {
+			almanac.routes['internalStatus'] = almanac.serveInternalStatus;	//Provides all kinds of info on the internal ALMANAC platform
+		}
 
 		require('./almanac-peering.js')(almanac);
 		require('./almanac-resourceCatalogue.js')(almanac);

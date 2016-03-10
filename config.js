@@ -13,7 +13,7 @@ var hosts = {
 		virtualizationLayer: {
 			scheme:     process.env.VL_SCHEME || 'http',
 			  host:     process.env.VL_HOST   || 'localhost',
-			  port: int(process.env.VL_PORT)  || 80,
+			  port:    +(process.env.VL_PORT) || 80,
 		},
 		virtualizationLayerPublicUrl: process.env.VL_PUBLIC_URL || '',	//Public URL of this Virtualization Layer, if any
 		mqttBrokerUrl: process.env.MQTT_BROKER_URL || 'mqtt://localhost/',
@@ -27,7 +27,7 @@ var hosts = {
 		santanderUrl: process.env.SANTANDER_URL || 'http://data.smartsantander.eu/ISMB/',
 		virtualizationLayerPeers: [	//Manual peering (sends the local MQTT events to other VirtualizationLayers
 			//'http://almanac.alexandra.dk/',	//Alexandra Institute (Ubuntu)
-			//'http://p2.alapetite.dk:8080/',	//Alexandra Institute (Raspberry Pi)
+			//'http://p2.alapetite.dk/',	//Alexandra Institute (Raspberry Pi)
 			//'http://130.192.86.227:8088/',	//ISMB
 		],
 	};
@@ -37,6 +37,9 @@ exports.config = {
 
 	//{silent, error, warn, http, info, verbose, silly}
 	logLevel: process.env.LOG_LEVEL || 'info',
+
+	//Enables or disables the page showing internal variables and status
+	exposeInternalStatus: process.env.EXPOSE_INTERNAL_STATUS || true,
 
 	//For compatibility with old MQTT brokers, e.g. Mosquitto < 1.3
 	mqttUseOldVersion3: bool(process.env.MQTT_USE_OLD_VERSION_3) || true,

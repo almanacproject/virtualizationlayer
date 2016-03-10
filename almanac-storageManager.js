@@ -13,10 +13,18 @@ module.exports = function (almanac) {
 
 	function proxyStorageManager(req, res) {
 
+		if (!almanac.config.hosts.storageManagerUrl) {
+			almanac.basicHttp.serve503(req, res);
+			return;
+		}
+
+		var url = almanac.config.hosts.storageManagerUrl + req.url;
+
 		req.pipe(almanac.request({
 				method: req.method,
-				uri: almanac.config.hosts.storageManagerUrl + req.url,
+				url: url,
 				timeout: 25000,
+				encoding: null,
 			}, function (error, response, body) {
 				if (error || response.statusCode != 200 || !body) {
 					almanac.log.warn('VL', 'Error ' + (response ? response.statusCode : 'undefined') + ' proxying to StorageManager!');

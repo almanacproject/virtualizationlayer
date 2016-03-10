@@ -20,7 +20,7 @@ ENV NODE_ENV=production \
 ENV VL_PUBLIC_URL="" \
     MQTT_BROKER_URL=mqtt://localhost/
 
-ENV NETWORK_MANAGER_URL=http://localhost:8181 \
+ENV NETWORK_MANAGER_URL=http://localhost:8181/ \
     RESOURCE_CATALOGUE_URN=urn:schemas-upnp-org:IoTdevice:OGCapplicationIoTresourcemanager:1 \
     RESOURCE_CATALOGUE_URL=http://localhost:44441/
 

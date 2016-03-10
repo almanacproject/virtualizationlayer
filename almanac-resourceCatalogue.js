@@ -33,9 +33,12 @@ module.exports = function (almanac) {
 						almanac.basicHttp.serve503(req, res);
 					}
 				}
-			})).pipe(res, {
-					end: true,
-				});
+			}).on('error', function (err) {
+				almanac.log.warn('VL', 'Error ' + err + ' proxying to Resource Catalogue!');
+				almanac.basicHttp.serve503(req, res);
+			}).pipe(res, {
+				end: true,
+			}));
 	}
 
 	almanac.routes['ResourceCatalogue/'] = proxyResourceCatalogue;

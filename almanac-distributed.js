@@ -171,6 +171,8 @@ module.exports = function (almanac) {
 						error: error,
 						body: body,
 					});
+			}).on('error', function (err) {
+				almanac.log.warn('VL', 'Error ' + err + ' during reply to distributed request!');
 			});
 	};
 

@@ -33,6 +33,8 @@ module.exports = function (almanac) {
 						} else {
 							almanac.log.verbose('VL', 'MQTT forwarded to ' + peer);
 						}
+					}).on('error', function (err) {
+						almanac.log.warn('VL', 'Error ' + err + ' during post to peers!');
 					});
 			}
 

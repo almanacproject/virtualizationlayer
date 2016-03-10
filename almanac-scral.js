@@ -29,9 +29,12 @@ module.exports = function (almanac) {
 						almanac.basicHttp.serve503(req, res);
 					}
 				}
-			})).pipe(res, {
-					end: true,
-				});
+			}).on('error', function (err) {
+				almanac.log.warn('VL', 'Error ' + err + ' proxying to SCRAL!');
+				almanac.basicHttp.serve503(req, res);
+			}).pipe(res, {
+				end: true,
+			}));
 	}
 
 	function proxyScralUi(req, res) {
@@ -46,7 +49,12 @@ module.exports = function (almanac) {
 						almanac.basicHttp.serve503(req, res);
 					}
 				}
-			})).pipe(res);
+			}).on('error', function (err) {
+				almanac.log.warn('VL', 'Error ' + err + ' proxying to SCRAL UI!');
+				almanac.basicHttp.serve503(req, res);
+			}).pipe(res, {
+				end: true,
+			}));
 	}
 
 	almanac.routes['scral/'] = proxyScral;	//Proxying to SCRAL

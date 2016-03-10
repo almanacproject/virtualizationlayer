@@ -31,6 +31,8 @@ module.exports = function (almanac) {
 					almanac.log.warn('VL', 'Cannot register in the NetworkManager! Will try again. Status: ' + response.statusCode);
 					almanac.log.verbose('VL', 'NetworkManager error: ' + body);
 				}
+			}).on('error', function (err) {
+				almanac.log.warn('VL', 'Error ' + err + ' during registration in Network Manager!');
 			});
 	}
 
@@ -77,6 +79,8 @@ module.exports = function (almanac) {
 				} else {
 					almanac.mqttVirtualAddress = body[0].VirtualAddress;
 				}
+			}).on('error', function (err) {
+				almanac.log.warn('VL', 'Error ' + err + ' during update of MQTT virtual address in network manager!');
 			});
 	}
 	updateMqttVirtualAddress();
@@ -92,6 +96,7 @@ module.exports = function (almanac) {
 				method: req.method,
 				uri: almanac.config.hosts.networkManagerUrl + 'HttpTunneling/0/' + req.url,
 				timeout: 20000,
+				encoding: null,
 			}, function (error, response, body) {
 				if (error || response.statusCode != 200 || !body) {
 					almanac.log.warn('VL', 'Error ' + (response ? response.statusCode : 0) + ' proxying to NetworkManager tunneling!');
@@ -99,7 +104,12 @@ module.exports = function (almanac) {
 						almanac.basicHttp.serve503(req, res);
 					}
 				}
-			})).pipe(res);
+			}).on('error', function (err) {
+				almanac.log.warn('VL', 'Error ' + err + ' proxying to NetworkManager tunneling!');
+				almanac.basicHttp.serve503(req, res);
+			}).pipe(res, {
+				end: true,
+			}));
 	}
 
 	function proxyLinksmart(req, res) {
@@ -119,7 +129,12 @@ module.exports = function (almanac) {
 						almanac.basicHttp.serve503(req, res);
 					}
 				}
-			})).pipe(res);
+			}).on('error', function (err) {
+				almanac.log.warn('VL', 'Error ' + err + ' proxying to LinkSmart!');
+				almanac.basicHttp.serve503(req, res);
+			}).pipe(res, {
+				end: true,
+			}));
 	}
 
 	almanac.routes['tunnel/'] = proxyNetworkManagerTunnel;	//Proxying to NetworkManager tunnel

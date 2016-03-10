@@ -34,7 +34,12 @@ module.exports = function (almanac) {
 				} else if (req.method === 'POST') {
 					almanac.log.verbose('VL', 'POST request forwarded to StorageManager' + JSON.stringify({response: response}));
 				}
-			})).pipe(res);
+			}).on('error', function (err) {
+				almanac.log.warn('VL', 'Error ' + err + ' proxying to StorageManager!');
+				almanac.basicHttp.serve503(req, res);
+			}).pipe(res, {
+				end: true,
+			}));
 	}
 
 	// function dmToGeojson(json) {	//Conversion to GeoJSON format (JSON convention for geographic data)
@@ -247,6 +252,9 @@ module.exports = function (almanac) {
 						almanac.basicHttp.serve500(req, res, 'Error format conversion from StorageManager: ' + ex);
 					}
 				}
+			}).on('error', function (err) {
+				almanac.log.warn('VL', 'Error ' + err + ' during format conversion from StorageManager!');
+				almanac.basicHttp.serve503(req, res);
 			});
 	}
 

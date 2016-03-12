@@ -27,6 +27,11 @@ almanac.basicHttp = basicHttp;
 almanac.http = http;
 
 var server = http.createServer(function (req, res) {
+	try {
+		basicHttp.log(req, null);	//Verbose logging
+	} catch (ex) {
+		almanac.log.error('VL', 'Node.js: Log exception: %s', ex);
+	}
 	var reqUrl0 = '';	//Original request URL
 	try {
 		if (req && req.url) {

@@ -26,10 +26,14 @@ var basicHttp = {
 	npmlogPrefix: '',
 
 	log: function (req, res) {
-		var message = (new Date()).toISOString() + '\t' + req.connection.remoteAddress + '\t' + res.statusCode + '\t"' + req.method + ' ' + req.url + '"\t"' +
+		var message = (new Date()).toISOString() + '\t' + req.connection.remoteAddress + '\t' + (res ? res.statusCode : '?') + '\t"' + req.method + ' ' + req.url + '"\t"' +
 			(req.headers['user-agent'] || '') + '"';
 		if (basicHttp.npmlog) {
-			basicHttp.npmlog.http(basicHttp.npmlogPrefix, message);
+			if (res) {
+				basicHttp.npmlog.http(basicHttp.npmlogPrefix, message);
+			} else {
+				basicHttp.npmlog.verbose(basicHttp.npmlogPrefix, message);
+			}
 		} else {
 			console.log('HTTP:\t' + message);
 		}

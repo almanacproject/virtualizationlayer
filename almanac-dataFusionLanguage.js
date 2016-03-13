@@ -34,9 +34,9 @@ module.exports = function (almanac) {
 			}).on('error', function (err) {
 				almanac.log.warn('VL', 'Error ' + err + ' proxying to Data Fusion Language API!');
 				almanac.basicHttp.serve503(req, res);
-			}).pipe(res, {
+			})).pipe(res, {
 				end: true,
-			}));
+			});
 	}
 
 	almanac.routes['dfl/'] = proxyDfl;	//Proxying to Data Fusion Manager

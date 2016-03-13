@@ -107,9 +107,9 @@ module.exports = function (almanac) {
 			}).on('error', function (err) {
 				almanac.log.warn('VL', 'Error ' + err + ' proxying to NetworkManager tunneling!');
 				almanac.basicHttp.serve503(req, res);
-			}).pipe(res, {
+			})).pipe(res, {
 				end: true,
-			}));
+			});
 	}
 
 	function proxyLinksmart(req, res) {
@@ -132,9 +132,9 @@ module.exports = function (almanac) {
 			}).on('error', function (err) {
 				almanac.log.warn('VL', 'Error ' + err + ' proxying to LinkSmart!');
 				almanac.basicHttp.serve503(req, res);
-			}).pipe(res, {
+			})).pipe(res, {
 				end: true,
-			}));
+			});
 	}
 
 	almanac.routes['tunnel/'] = proxyNetworkManagerTunnel;	//Proxying to NetworkManager tunnel

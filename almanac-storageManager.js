@@ -34,12 +34,13 @@ module.exports = function (almanac) {
 				} else if (req.method === 'POST') {
 					almanac.log.verbose('VL', 'POST request forwarded to StorageManager' + JSON.stringify({response: response}));
 				}
-			}).on('error', function (err) {
 				almanac.log.warn('VL', 'Error ' + err + ' proxying to StorageManager!');
+			}).on('error', function (err) {
 				almanac.basicHttp.serve503(req, res);
-			}).pipe(res, {
+				throw err;
+			})).pipe(res, {
 				end: true,
-			}));
+			});
 	}
 
 	// function dmToGeojson(json) {	//Conversion to GeoJSON format (JSON convention for geographic data)

@@ -26,7 +26,7 @@ module.exports = function (almanac) {
 				},
 			}, function (error, response, body) {
 				if (error || response.statusCode != 200 || !body) {
-					almanac.log.warn('VL', 'Error ' + (response ? response.statusCode : 'undefined') + ' proxying to Data Fusion Language API!');
+					almanac.log.warn('VL', 'Error ' + (response ? response.statusCode : 0) + ' proxying to Data Fusion Language API! ' + error + ' @ ' + url);
 					if (!body) {
 						almanac.basicHttp.serve503(req, res);
 					}

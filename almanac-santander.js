@@ -24,7 +24,7 @@ module.exports = function (almanac) {
 				encoding: null,
 			}, function (error, response, body) {
 				if (error || response.statusCode != 200 || !body) {
-					almanac.log.warn('VL', 'Error ' + (response ? response.statusCode : 'undefined') + ' proxying to SmartSantander!');
+					almanac.log.warn('VL', 'Error ' + (response ? response.statusCode : 0) + ' proxying to SmartSantander! ' + error + ' @ ' + url);
 					if (!body) {
 						almanac.basicHttp.serve503(req, res);
 					}

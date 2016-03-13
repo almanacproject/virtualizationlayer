@@ -27,15 +27,15 @@ module.exports = function (almanac) {
 				encoding: null,
 			}, function (error, response, body) {
 				if (error || response.statusCode != 200 || !body) {
-					almanac.log.warn('VL', 'Error ' + (response ? response.statusCode : 'undefined') + ' proxying to StorageManager!');
+					almanac.log.warn('VL', 'Error ' + (response ? response.statusCode : 0) + ' proxying to StorageManager! ' + error + ' @ ' + url);
 					if (!body) {
 						almanac.basicHttp.serve503(req, res);
 					}
 				} else if (req.method === 'POST') {
-					almanac.log.verbose('VL', 'POST request forwarded to StorageManager' + JSON.stringify({response: response}));
+					almanac.log.verbose('VL', 'POST request forwarded to StorageManager ' + JSON.stringify({response: response}));
 				}
-				almanac.log.warn('VL', 'Error ' + err + ' proxying to StorageManager!');
 			}).on('error', function (err) {
+				almanac.log.warn('VL', 'Error ' + err + ' proxying to StorageManager!');
 				almanac.basicHttp.serve503(req, res);
 				throw err;
 			})).pipe(res, {

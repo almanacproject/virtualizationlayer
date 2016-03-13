@@ -31,13 +31,10 @@ module.exports = function (almanac) {
 					if (!body) {
 						almanac.basicHttp.serve503(req, res);
 					}
+					throw error;
 				} else if (req.method === 'POST') {
 					almanac.log.verbose('VL', 'POST request forwarded to StorageManager ' + JSON.stringify({response: response}));
 				}
-			}).on('error', function (err) {
-				almanac.log.warn('VL', 'Error ' + err + ' proxying to StorageManager!');
-				almanac.basicHttp.serve503(req, res);
-				throw err;
 			})).pipe(res, {
 				end: true,
 			});
@@ -209,6 +206,7 @@ module.exports = function (almanac) {
 					if (!body) {
 						almanac.basicHttp.serve503(req, res);
 					}
+					throw error;
 				} else {
 					try {
 						var json = JSON.parse(body),
@@ -253,9 +251,6 @@ module.exports = function (almanac) {
 						almanac.basicHttp.serve500(req, res, 'Error format conversion from StorageManager: ' + ex);
 					}
 				}
-			}).on('error', function (err) {
-				almanac.log.warn('VL', 'Error ' + err + ' during format conversion from StorageManager!');
-				almanac.basicHttp.serve503(req, res);
 			});
 	}
 

@@ -28,10 +28,8 @@ module.exports = function (almanac) {
 					if (!body) {
 						almanac.basicHttp.serve503(req, res);
 					}
+					throw error;
 				}
-			}).on('error', function (err) {
-				almanac.log.warn('VL', 'Error ' + err + ' proxying to Data Fusion Language Manager!');
-				almanac.basicHttp.serve503(req, res);
 			})).pipe(res, {
 				end: true,
 			});

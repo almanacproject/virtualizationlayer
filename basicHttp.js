@@ -40,6 +40,9 @@ var basicHttp = {
 	},
 
 	serveHome: function (req, res) {
+		if (!res || res.finished) {
+			return;
+		}
 		var now = new Date();
 		res.writeHead(200, {
 			'Content-Type': 'text/html; charset=UTF-8',
@@ -69,6 +72,9 @@ It is now ' + now.toISOString() + '.\n\
 	},
 
 	serve400: function (req, res) {
+		if (!res || res.finished) {
+			return;
+		}
 		if (!res.headersSent) {
 			res.writeHead(400, {
 				'Content-Type': 'text/html; charset=UTF-8',
@@ -92,7 +98,10 @@ It is now ' + now.toISOString() + '.\n\
 	},
 
 	serve404: function (req, res) {
-	//When a static file is not found
+		//When a static file is not found
+		if (!res || res.finished) {
+			return;
+		}
 		if (!res.headersSent) {
 			res.writeHead(404, {
 				'Content-Type': 'text/html; charset=UTF-8',
@@ -117,6 +126,9 @@ It is now ' + now.toISOString() + '.\n\
 	},
 
 	serve405: function (req, res, allowedMethods) {
+		if (!res || res.finished) {
+			return;
+		}
 		if (!res.headersSent) {
 			res.writeHead(405, {
 				'Content-Type': 'text/html; charset=UTF-8',
@@ -141,6 +153,9 @@ It is now ' + now.toISOString() + '.\n\
 	},
 
 	serve406: function (req, res) {
+		if (!res || res.finished) {
+			return;
+		}
 		if (!res.headersSent) {
 			res.writeHead(406, {
 				'Content-Type': 'text/html; charset=UTF-8',
@@ -164,6 +179,9 @@ It is now ' + now.toISOString() + '.\n\
 	},
 
 	serve500: function (req, res, ex) {
+		if (!res || res.finished) {
+			return;
+		}
 		if (basicHttp.npmlog) {
 			basicHttp.npmlog.error(basicHttp.npmlogPrefix, ex);
 		} else {
@@ -193,6 +211,9 @@ It is now ' + now.toISOString() + '.\n\
 	},
 
 	serve503: function (req, res) {
+		if (!res || res.finished) {
+			return;
+		}
 		if (!res.headersSent) {
 			res.writeHead(503, {
 				'Content-Type': 'text/html; charset=UTF-8',
@@ -216,6 +237,9 @@ It is now ' + now.toISOString() + '.\n\
 	},
 
 	serveStaticFile: function (req, res) {
+		if (!res || res.finished) {
+			return;
+		}
 		var url = req.url,
 			qn = url.indexOf('?');
 		if (qn >= 0) {	//No query string
@@ -270,6 +294,9 @@ It is now ' + now.toISOString() + '.\n\
 	},
 
 	serveJson: function (req, res, json) {
+		if (!res || res.finished) {
+			return;
+		}
 		res.writeHead(200, {
 			'Content-Type': 'application/json; charset=UTF-8',
 			'Date': (new Date()).toUTCString(),

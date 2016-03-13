@@ -31,8 +31,6 @@ module.exports = function (almanac) {
 					almanac.log.warn('VL', 'Cannot register in the NetworkManager! Will try again. Status: ' + response.statusCode);
 					almanac.log.verbose('VL', 'NetworkManager error: ' + body);
 				}
-			}).on('error', function (err) {
-				almanac.log.warn('VL', 'Error ' + err + ' during registration in Network Manager!');
 			});
 	}
 
@@ -79,8 +77,6 @@ module.exports = function (almanac) {
 				} else {
 					almanac.mqttVirtualAddress = body[0].VirtualAddress;
 				}
-			}).on('error', function (err) {
-				almanac.log.warn('VL', 'Error ' + err + ' during update of MQTT virtual address in network manager!');
 			});
 	}
 	updateMqttVirtualAddress();
@@ -103,10 +99,8 @@ module.exports = function (almanac) {
 					if (!body) {
 						almanac.basicHttp.serve503(req, res);
 					}
+					throw error;
 				}
-			}).on('error', function (err) {
-				almanac.log.warn('VL', 'Error ' + err + ' proxying to NetworkManager tunneling!');
-				almanac.basicHttp.serve503(req, res);
 			})).pipe(res, {
 				end: true,
 			});
@@ -128,10 +122,8 @@ module.exports = function (almanac) {
 					if (!body) {
 						almanac.basicHttp.serve503(req, res);
 					}
+					throw error;
 				}
-			}).on('error', function (err) {
-				almanac.log.warn('VL', 'Error ' + err + ' proxying to LinkSmart!');
-				almanac.basicHttp.serve503(req, res);
 			})).pipe(res, {
 				end: true,
 			});

@@ -20,7 +20,7 @@ module.exports = function (almanac) {
 
 		var url = almanac.config.hosts.storageManagerUrl + req.url;
 
-		req.pipe(almanac.request({
+		almanac.request({
 				method: req.method,
 				url: url,
 				timeout: 25000,
@@ -31,11 +31,10 @@ module.exports = function (almanac) {
 					if (!body) {
 						almanac.basicHttp.serve503(req, res);
 					}
-					throw error;
 				} else if (req.method === 'POST') {
 					almanac.log.verbose('VL', 'POST request forwarded to StorageManager ' + JSON.stringify({response: response}));
 				}
-			})).pipe(res, {
+			}).pipe(res, {
 				end: true,
 			});
 	}
@@ -206,7 +205,6 @@ module.exports = function (almanac) {
 					if (!body) {
 						almanac.basicHttp.serve503(req, res);
 					}
-					throw error;
 				} else {
 					try {
 						var json = JSON.parse(body),

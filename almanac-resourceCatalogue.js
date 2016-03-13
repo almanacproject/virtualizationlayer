@@ -17,7 +17,7 @@ module.exports = function (almanac) {
 
 		var url = almanac.config.hosts.recourceCatalogueUrl + req.url;
 
-		req.pipe(almanac.request({
+		almanac.request({
 				method: req.method,
 				url: url,
 				timeout: 30000,
@@ -32,9 +32,8 @@ module.exports = function (almanac) {
 					if (!body) {
 						almanac.basicHttp.serve503(req, res);
 					}
-					throw error;
 				}
-			})).pipe(res, {
+			}).pipe(res, {
 				end: true,
 			});
 	}

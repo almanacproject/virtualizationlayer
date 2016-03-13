@@ -60,13 +60,14 @@ var server = http.createServer(function (req, res) {
 		}
 	} catch (ex) {
 		req.url = reqUrl0;
+		almanac.log.error('VL', 'Exception: ' + ex);
 		basicHttp.serve500(req, res, 'Exception: ' + ex);
 	}
 	try {
 		req.url = reqUrl0;
 		basicHttp.log(req, res);
 	} catch (ex) {
-		almanac.log.error('VL', 'Node.js: Log exception: %s', ex);
+		almanac.log.error('VL', 'Log exception: %s', ex);
 	}
 });
 

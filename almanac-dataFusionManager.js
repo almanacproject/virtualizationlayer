@@ -17,7 +17,7 @@ module.exports = function (almanac) {
 
 		var url = almanac.config.hosts.dfmUrl + req.url;
 
-		req.pipe(almanac.request({
+		almanac.request({
 				method: req.method,
 				url: url,
 				timeout: 15000,
@@ -28,9 +28,8 @@ module.exports = function (almanac) {
 					if (!body) {
 						almanac.basicHttp.serve503(req, res);
 					}
-					throw error;
 				}
-			})).pipe(res, {
+			}).pipe(res, {
 				end: true,
 			});
 	}

@@ -88,7 +88,7 @@ module.exports = function (almanac) {
 			return;
 		}
 
-		req.pipe(almanac.request({
+		almanac.request({
 				method: req.method,
 				uri: almanac.config.hosts.networkManagerUrl + 'HttpTunneling/0/' + req.url,
 				timeout: 20000,
@@ -99,9 +99,8 @@ module.exports = function (almanac) {
 					if (!body) {
 						almanac.basicHttp.serve503(req, res);
 					}
-					throw error;
 				}
-			})).pipe(res, {
+			}).pipe(res, {
 				end: true,
 			});
 	}
@@ -112,7 +111,7 @@ module.exports = function (almanac) {
 			return;
 		}
 
-		req.pipe(almanac.request({
+		almanac.request({
 				method: req.method,
 				uri: almanac.config.hosts.networkManagerUrl + req.url,
 				timeout: 20000,
@@ -122,9 +121,8 @@ module.exports = function (almanac) {
 					if (!body) {
 						almanac.basicHttp.serve503(req, res);
 					}
-					throw error;
 				}
-			})).pipe(res, {
+			}).pipe(res, {
 				end: true,
 			});
 	}

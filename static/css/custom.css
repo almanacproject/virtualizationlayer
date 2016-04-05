@@ -13,12 +13,23 @@ body
 }
 
 .thumbnail h5 {
+	display: block;
 	min-height: 48px;
+	position: relative;
 }
 
-.thumbnail img {
+.thumbnail h5 img {
 	float: right;
-	margin: 10px 0 0 0;
 	height: 48px;
 	width: 48x;
 }
+
+.thumbnail h5 span {
+	display: block;
+	margin: auto 53px auto 5px;
+	position: absolute;
+	top: 50%;
+	transform: translateY(-50%);
+}
+
+

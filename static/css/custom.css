@@ -12,3 +12,13 @@ body
 	 padding-top: 70px;
 }
 
+.thumbnail h5 {
+	min-height: 48px;
+}
+
+.thumbnail img {
+	float: right;
+	margin: 10px 0 0 0;
+	height: 48px;
+	width: 48x;
+}

@@ -194,9 +194,14 @@ function getStatementCount() {
 		type : "GET",
 		crossDomain : true,
 		success : function(data) {
-			var jsonData = JSON.parse(data);
-			if (jsonData)
-				$("#dfmQueryCount").text(""+Object.keys(jsonData.EsperEngine).length);
+			var jsonData = {};
+			try {
+				jsonData = JSON.parse(data);
+			} catch (ex) {
+				jsonData = { 'EsperEngine': [] };
+			}
+			$("#dfmQueryCount").text("" + (jsonData && jsonData.EsperEngine ?
+				Object.keys(jsonData.EsperEngine).length : 0));
 			if ($("#dfmStatus").text()=="Offline")
 				incActiveServices();
 			$("#dfmStatus").text("Online");

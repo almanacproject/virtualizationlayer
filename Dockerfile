@@ -9,7 +9,7 @@ COPY . /opt/prs/app
 
 RUN rm -f config.local.js
 
-RUN npm build
+RUN npm install
 
 ENV NODE_ENV=production \
     INSTANCE_NAME=WaterManagementInstance \
@@ -29,6 +29,8 @@ ENV SCRAL_URL=http://localhost:8080/connectors.rest/ \
     STORAGE_MANAGER_UTL=http://cnet006.cloudapp.net/Dmf/SensorThings/ \
     DFM_URL=http://localhost:8319/ \
     SANTANDER_URL=http://data.smartsantander.eu/ISMB/
+
+ENV OPENID_PUBLIC_KEY=""
 
 ENV LOG_LEVEL=debug
 

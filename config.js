@@ -8,6 +8,8 @@
 			for the ALMANAC European project http://www.almanac-project.eu
 */
 
+var fs = require('fs');
+
 var hosts = {
 		instanceName: process.env.INSTANCE_NAME || '',	//Name of the instance in the federation
 		virtualizationLayer: {
@@ -32,6 +34,15 @@ var hosts = {
 		],
 	};
 
+var openIdPublicKey = process.env.OPENID_PUBLIC_KEY;
+if (!openIdPublicKey) {
+	try {
+		openIdPublicKey = fs.readFileSync('./certificates/public.pem').toString();
+	} catch (ex) {
+		console.error('Error while loading OpenID public key: ' + ex);
+	}
+}
+
 exports.config = {
 	hosts: hosts,
 
@@ -39,24 +50,10 @@ exports.config = {
 	logLevel: process.env.LOG_LEVEL || 'info',
 
 	//Enables or disables the page showing internal variables and status
-	exposeInternalStatus: process.env.EXPOSE_INTERNAL_STATUS || true,
+	exposeInternalStatus: (process.env.EXPOSE_INTERNAL_STATUS || 'on') === 'on',
 
 	//For compatibility with old MQTT brokers, e.g. Mosquitto < 1.3
-	mqttUseOldVersion3: bool(process.env.MQTT_USE_OLD_VERSION_3) || true,
+	mqttUseOldVersion3: (process.env.MQTT_USE_OLD_VERSION_3 || 'on') === 'on',
+
+	openIdPublicKey: openIdPublicKey || '',
 };
-
-
-function bool(str) {
-  if (str === void 0) return false;
-  return str.toLowerCase() === 'true';
-}
-
-function int(str) {
-  if (!str) return 0;
-  return parseInt(str, 10);
-}
-
-function float(str) {
-  if (!str) return 0;
-  return parseFloat(str, 10);
-}

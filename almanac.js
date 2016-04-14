@@ -89,6 +89,7 @@ It is now ' + now.toISOString() + '.\n\
 			dfmUrl: almanac.config.hosts.dfmUrl,
 			dflUrl: almanac.config.hosts.dflUrl,
 			server: almanac.basicHttp.serverSignature,
+			openIdPublicKey: almanac.config.openIdPublicKey,
 			randomId: almanac.randomId,
 			nodejs: process.versions,
 		};
@@ -127,6 +128,7 @@ It is now ' + now.toISOString() + '.\n\
 		require('./almanac-websocket-custom-events.js')(almanac);	//WebSocket for custom events (from MQTT)
 		require('./almanac-websocket-chat.js')(almanac);	//WebSocket for broadcast chat
 		require('./almanac-mqtt.js')(almanac);	//MQTT
+		require('./almanac-jsonWebToken.js')(almanac);	//JWT
 
 		setTimeout(function() {
 				require('./almanac-upnp.js')(almanac);	//UPnP (SSDP)

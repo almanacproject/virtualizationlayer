@@ -27,6 +27,8 @@ exports.config = {
 	//{silent, error, warn, http, info, verbose, silly}
 	logLevel: 'info',
 
+	exposeInternalStatus: true,
+
 	//Enable iff you use Mosquitto >= 1.3
 	mqttUseOldVersion3: false,
 };

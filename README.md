@@ -10,6 +10,7 @@ For MQTT, recommend protocol 3.1.1+ (e.g. Mosquitto version 1.3+).
 	```
 
 	* Otherwise, use https://github.com/nodesource/distributions
+		* Compatible with e.g. Raspberry Pi 3
 
 2. Create and move to the directory where the VirtualizationLayer should be located, e.g.
 
@@ -34,7 +35,7 @@ Or if you want to perform continuous integration and other tests, leave out the 
 npm install
 ```
 
-> The main dependencies include `ws`, `mqtt`, `node-ssdp`, and `request`.
+> The main dependencies include `request`, `ws`, `mqtt`, `node-ssdp`, `jsonwebtoken`.
 
 
 # Setup of the Virtualization Layer

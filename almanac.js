@@ -16,7 +16,10 @@ var almanac = {
 	request: require('request'),
 	os: require('os'),
 
-	routes: {	//Routing of requests
+	openRoutes: {	//Routing of requests which do not need security
+	},
+
+	routes: {	//Routing of requests which need security / authorization / policy
 	},
 
 	serveHome: function (req, res) {
@@ -67,6 +70,7 @@ It is now ' + now.toISOString() + '.\n\
 			dfmUrlOk: !!almanac.config.hosts.dfmUrl,
 			dflUrlOk: !!almanac.config.hosts.dflUrl,
 			//server: almanac.basicHttp.serverSignature,
+			authorizationOk: almanac.config.openIdPublicKey && almanac.config.requireAuthorization && almanac.config.requirePolicy,
 			randomId: almanac.randomId,
 			//nodejs: process.versions,
 		};
@@ -90,6 +94,8 @@ It is now ' + now.toISOString() + '.\n\
 			dflUrl: almanac.config.hosts.dflUrl,
 			server: almanac.basicHttp.serverSignature,
 			openIdPublicKey: almanac.config.openIdPublicKey,
+			requireAuthorization: almanac.config.requireAuthorization,
+			requirePolicy: almanac.config.requirePolicy,
 			randomId: almanac.randomId,
 			nodejs: process.versions,
 		};
@@ -112,7 +118,7 @@ It is now ' + now.toISOString() + '.\n\
 		almanac.basicHttp.serverSignature = 'ALMANAC VirtualizationLayer ' + almanac.version + ' / ' + almanac.basicHttp.serverSignature;
 		almanac.basicHttp.csp = "default-src 'self'; connect-src 'self' ws:; font-src 'self' fonts.gstatic.com; style-src 'self' fonts.googleapis.com";	//TODO: Reduce white-list
 
-		almanac.routes['virtualizationLayerInfo'] = almanac.serveInfo;	//Requests the public address of this VirtualizationLayer instance and other info
+		almanac.openRoutes['virtualizationLayerInfo'] = almanac.serveInfo;	//Requests the public address of this VirtualizationLayer instance and other info
 		if (almanac.config.exposeInternalStatus) {
 			almanac.routes['internalStatus'] = almanac.serveInternalStatus;	//Provides all kinds of info on the internal ALMANAC platform
 		}
@@ -138,6 +144,6 @@ It is now ' + now.toISOString() + '.\n\
 
 };
 
-almanac.routes['vl'] = almanac.serveHome;	//Virtualization Layer home page
+almanac.openRoutes['vl'] = almanac.serveHome;	//Virtualization Layer home page
 
 exports.almanac = almanac;

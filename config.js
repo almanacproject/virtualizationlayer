@@ -50,10 +50,17 @@ exports.config = {
 	logLevel: process.env.LOG_LEVEL || 'info',
 
 	//Enables or disables the page showing internal variables and status
-	exposeInternalStatus: (process.env.EXPOSE_INTERNAL_STATUS || 'on') === 'on',
+	exposeInternalStatus: (process.env.EXPOSE_INTERNAL_STATUS || 'yes') === 'yes',
 
 	//For compatibility with old MQTT brokers, e.g. Mosquitto < 1.3
-	mqttUseOldVersion3: (process.env.MQTT_USE_OLD_VERSION_3 || 'on') === 'on',
+	mqttUseOldVersion3: (process.env.MQTT_USE_OLD_VERSION_3 || 'no') === 'yes',
 
+	//Public key of the OpenID Connect server, to validate the signature of the authorization token
 	openIdPublicKey: openIdPublicKey || '',
+
+	//Enforces that requests must have a valid authorization token
+	requireAuthorization: (process.env.REQUIRE_AUTHORIZATION || 'yes') === 'yes',
+
+	//Enforces that authorization tokens must refer to a valid policy
+	requirePolicy: (process.env.REQUIRE_POLICY || 'yes') === 'yes',
 };

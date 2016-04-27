@@ -10,6 +10,31 @@ var jwt = require('jsonwebtoken');
 
 module.exports = function (almanac) {
 
+	almanac.jwtVerifyAuthorization = function (req, res, successCallback) {
+		if (req && req.headers && req.headers.authorization) {
+			var token = req.headers.authorization;
+			if (token.length) {
+				token = token.trim();
+				if (token.startsWith('Bearer ')) {
+					token = token.substr(7);
+					almanac.log.verbose('VL', 'Bearer: ' + token);
+					jwt.verify(token, almanac.config.openIdPublicKey, {
+							audience: almanac.config.hosts.instanceName,
+							complete: true,
+						}, function(err, decoded) {
+							if (err) {
+								almanac.basicHttp.serve401(req, res, 'Bearer realm="' + almanac.config.hosts.instanceName + '", error="invalid_token", error_description="' + err + '"', err);
+							} else {
+								successCallback(decoded);
+							}
+						});
+					return;
+				}
+			}
+		}
+		almanac.basicHttp.serve401(req, res, 'Bearer realm="' + almanac.config.hosts.instanceName + '"');
+	};
+
 	function jwtDecode(req, res) {
 		if (req && req.url) {
 			var token = req.url,
@@ -23,7 +48,10 @@ module.exports = function (almanac) {
 	function jwtVerify(req, res) {
 		if (req && req.url) {
 			var token = req.url;
-			jwt.verify(token, almanac.config.openIdPublicKey, function(err, decoded) {
+			jwt.verify(token, almanac.config.openIdPublicKey, {
+					audience: almanac.config.hosts.instanceName,
+					complete: true,
+				}, function(err, decoded) {
 					if (err) {
 						almanac.basicHttp.serveJson(req, res, err);
 					} else {
@@ -35,6 +63,6 @@ module.exports = function (almanac) {
 		}
 	}
 
-	almanac.routes['jwt.decode/'] = jwtDecode;
-	almanac.routes['jwt.verify/'] = jwtVerify;
+	almanac.openRoutes['jwt.decode/'] = jwtDecode;
+	almanac.openRoutes['jwt.verify/'] = jwtVerify;
 };

@@ -11,7 +11,7 @@ var os = require('os'),
 var basicHttp = {
 
 	escapeHtml: function (text) {
-		return text.replace(/&/g, "&amp;")
+		return ('' + text).replace(/&/g, "&amp;")
 			.replace(/</g, "&lt;")
 			.replace(/>/g, "&gt;")
 			.replace(/"/g, "&quot;")
@@ -92,6 +92,34 @@ It is now ' + now.toISOString() + '.\n\
 <body>\n\
 <h1>Bad request</h1>\n\
 <p>Your browser sent a request that this server could not understand.</p>\n\
+</body>\n\
+</html>\n\
+');
+	},
+
+	serve401: function (req, res, authenticate, errorDescription) {
+		if (!res || res.finished) {
+			return;
+		}
+		if (!res.headersSent) {
+			res.writeHead(401, {
+				'Content-Type': 'text/html; charset=UTF-8',
+				'Date': (new Date()).toUTCString(),
+				'Server': basicHttp.serverSignature,
+				'Content-Security-Policy': basicHttp.csp,
+				'WWW-Authenticate': authenticate,
+			});
+		}
+		res.end('<!DOCTYPE html>\n\
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en-GB" lang="en-GB">\n\
+<head>\n\
+<meta charset="UTF-8" />\n\
+<title>401 Unauthorized</title>\n\
+</head>\n\
+<body>\n\
+<h1>Unauthorized</h1>\n\
+<p>This server could not verify that you are authorized to access the document requested.</p>\n\
+<pre>' + basicHttp.escapeHtml(errorDescription) + '</pre>\n\
 </body>\n\
 </html>\n\
 ');
@@ -204,7 +232,7 @@ It is now ' + now.toISOString() + '.\n\
 <body>\n\
 <h1>Internal Server Error</h1>\n\
 <p>The server encountered an internal error or misconfiguration and was unable to complete your request.</p>\n\
-<pre>' + ex + '</pre>\n\
+<pre>' + basicHttp.escapeHtml(ex) + '</pre>\n\
 </body>\n\
 </html>\n\
 ');

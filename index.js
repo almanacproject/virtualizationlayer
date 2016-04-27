@@ -48,7 +48,17 @@ var server = http.createServer(function (req, res) {
 			}
 			if (almanac.routes[s1]) {
 				req.url = req.url.substring(s1.length + 1);
-				almanac.routes[s1](req, res);
+				if (config.requireAuthorization) {
+					almanac.jwtVerifyAuthorization(req, res, function (jwt) {
+							almanac.log.info('VL', 'JWT: ' + JSON.stringify(jwt));
+							almanac.routes[s1](req, res);
+						});
+				} else {
+					almanac.routes[s1](req, res);
+				}
+			} else if (almanac.openRoutes[s1]) {
+				req.url = req.url.substring(s1.length + 1);
+				almanac.openRoutes[s1](req, res);
 			} else if (s1 === '') {
 				req.url = '/index.html';
 				basicHttp.serveStaticFile(req, res);

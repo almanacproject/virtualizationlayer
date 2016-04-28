@@ -61,4 +61,5 @@ module.exports = function (almanac) {
 
 	almanac.routes['scral/'] = proxyScral;	//Proxying to SCRAL
 	almanac.routes['scralUi/'] = proxyScralUi;	//Proxying to SCRAL GUI
+	almanac.openPaths['/scral/countDevice'] = true;
 };

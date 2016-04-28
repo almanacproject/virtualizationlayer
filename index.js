@@ -48,7 +48,7 @@ var server = http.createServer(function (req, res) {
 			}
 			if (almanac.routes[s1]) {
 				req.url = req.url.substring(s1.length + 1);
-				if (config.requireAuthorization) {
+				if (config.requireAuthorization && !almanac.openPaths[reqUrl0]) {
 					almanac.jwtVerifyAuthorization(req, res, function (jwt) {
 							almanac.log.info('VL', 'JWT: ' + JSON.stringify(jwt));
 							almanac.routes[s1](req, res);

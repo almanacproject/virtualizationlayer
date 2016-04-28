@@ -129,4 +129,5 @@ module.exports = function (almanac) {
 
 	almanac.routes['tunnel/'] = proxyNetworkManagerTunnel;	//Proxying to NetworkManager tunnel
 	almanac.routes['linksmart/'] = proxyLinksmart;	//Proxying to LinkSmart Network
+	almanac.openPaths['/linksmart/GetNetworkManagerStatus?method=getLocalServices'] = true;
 };

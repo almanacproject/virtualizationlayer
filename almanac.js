@@ -22,6 +22,9 @@ var almanac = {
 	routes: {	//Routing of requests which need security / authorization / policy
 	},
 
+	openPaths: {	//White-list of paths, which do not need security
+	},
+
 	serveHome: function (req, res) {
 		var now = new Date();
 		res.writeHead(200, {

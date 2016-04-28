@@ -37,4 +37,5 @@ module.exports = function (almanac) {
 	}
 
 	almanac.routes['dfl/'] = proxyDfl;	//Proxying to Data Fusion Manager
+	almanac.openPaths['/dfl/api/data-fusion/v0.5.0/chains/'] = true;
 };

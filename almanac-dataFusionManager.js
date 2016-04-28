@@ -35,4 +35,5 @@ module.exports = function (almanac) {
 	}
 
 	almanac.routes['dfm/'] = proxyDfm;	//Proxying to Data Fusion Manager
+	almanac.openPaths['/dfm/statement/'] = true;
 };

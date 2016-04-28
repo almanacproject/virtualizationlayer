@@ -39,4 +39,5 @@ module.exports = function (almanac) {
 	}
 
 	almanac.routes['ResourceCatalogue/'] = proxyResourceCatalogue;
+	almanac.openPaths['/ResourceCatalogue/'] = true;
 };

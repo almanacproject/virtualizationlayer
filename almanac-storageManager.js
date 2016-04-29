@@ -258,5 +258,5 @@ module.exports = function (almanac) {
 	almanac.routes['sm-txt/'] = function (req, res) { proxyStorageManagerToFormat(req, res, 'tsv'); };	//Conversion of Storage Manager JSON to TXT
 	almanac.routes['sm-tsv/'] = function (req, res) { proxyStorageManagerToFormat(req, res, 'tsv'); };	//Conversion of Storage Manager JSON to TXT
 	almanac.routes['sm-csv/'] = function (req, res) { proxyStorageManagerToFormat(req, res, 'csv'); };	//Conversion of Storage Manager JSON to TXT
-	almanac.openPaths['/sm/help'] = true;
+	almanac.openPaths['/sm/'] = true;
 };

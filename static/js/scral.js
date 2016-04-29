@@ -3,8 +3,8 @@
 // the configuration parameters
 var scral_url = "./scral";
 var dfm_url = "./dfm";
-var network_manager_url = "./linksmart/GetNetworkManagerStatus?method=getLocalServices";
-var storage_manager_url = "./sm/help";
+var network_manager_url = "./linksmart/";
+var storage_manager_url = "./sm/";
 var resource_catalog_url = "./ResourceCatalogue/";
 var dfl_url = "./dfl/api/data-fusion/v0.5.0/chains/";
 
@@ -190,18 +190,13 @@ function handleVLCOffline()
 //--------- DFM ---------------------------
 function getStatementCount() {
 	$.ajax({
-		url : dfm_url+"/statement/",
+		url : dfm_url + "/",
 		type : "GET",
 		crossDomain : true,
-		success : function(data) {
-			var jsonData = {};
-			try {
-				jsonData = JSON.parse(data);
-			} catch (ex) {
-				jsonData = { 'EsperEngine': [] };
-			}
-			$("#dfmQueryCount").text("" + (jsonData && jsonData.EsperEngine ?
-				Object.keys(jsonData.EsperEngine).length : 0));
+		dataType: "json",
+		success : function(jsonData) {
+			$("#dfmQueryCount").text("" + (jsonData && jsonData.status ?
+				+jsonData.status.amount : 0));
 			if ($("#dfmStatus").text()=="Offline")
 				incActiveServices();
 			$("#dfmStatus").text("Online");
@@ -243,41 +238,32 @@ function getMqttState() {
 
 //----------- End MQTT broker ----------
 //----------- Network Manager ----------
-function networkManagerOnline() {
-	if ($("#networkManagerStatus").text() === "Offline") {
-		incActiveServices();
-	}
-	$("#networkManagerStatus").text("Online");
-	//set the class
-	$("#networkManagerStatus").removeClass("label-danger");
-	$("#networkManagerStatus").addClass("label-success");
-}
-
-function networkManagerOffline() {
-	if ($("#networkManagerStatus").text() === "Online") {
-		decActiveServices();
-	}
-	$("#networkManagerStatus").text("Offline");
-	//set the class
-	$("#networkManagerStatus").addClass("label-danger");
-	$("#networkManagerStatus").removeClass("label-success");
-}
-
 function getNetworkManagerStatus() {
 	$.ajax({
 		url : network_manager_url,
 		type : "GET",
 		crossDomain : true,
-		success : function(data) {
-			console.log(data);
-			networkManagerOnline();
+		dataType: "json",
+		success : function(jsonData) {
+			console.log(jsonData);
+			if ($("#networkManagerStatus").text() === "Offline") {
+				incActiveServices();
+			}
+			$("#networkManagerStatus").text("Online");
+			$("#networkManagerCount").text("" + (jsonData ? +jsonData.amount : 0));
+			//set the class
+			$("#networkManagerStatus").removeClass("label-danger");
+			$("#networkManagerStatus").addClass("label-success");
 		},
 		error : function(xhr) {
-			if (xhr.status == 400) {
-				networkManagerOnline();	//A request without parameter currently returns a 400
-			} else {
-				networkManagerOffline();
+			if ($("#networkManagerStatus").text() === "Online") {
+				decActiveServices();
 			}
+			$("#networkManagerStatus").text("Offline");
+			$("#networkManagerCount").text("0");
+			//set the class
+			$("#networkManagerStatus").addClass("label-danger");
+			$("#networkManagerStatus").removeClass("label-success");
 		}
 	});
 }
@@ -337,7 +323,7 @@ function getResourceCatalogStatus() {
 }
 //--------- END Resource Catalog  ----------
 
-//----------- Network Manager ----------
+//----------- DFL ----------
 function dflOnline() {
 	if ($("#dflStatus").text() === "Offline") {
 		incActiveServices();
@@ -376,4 +362,4 @@ function getDFLStatus() {
 		}
 	});
 }
-//--------- END Network Manager ----------
+//--------- END DFL ----------

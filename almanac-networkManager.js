@@ -111,23 +111,48 @@ module.exports = function (almanac) {
 			return;
 		}
 
-		almanac.request({
-				method: req.method,
-				uri: almanac.config.hosts.networkManagerUrl + req.url,
-				timeout: 20000,
-			}, function (error, response, body) {
-				if (error || response.statusCode != 200 || !body) {
-					almanac.log.warn('VL', 'Error ' + (response ? response.statusCode : 0) + ' proxying to LinkSmart!');
-					if (!body) {
+		var url = almanac.config.hosts.networkManagerUrl + req.url;
+
+		if (req.url === '') {
+
+			almanac.request({
+					method: req.method,
+					url: url + 'GetNetworkManagerStatus?method=getLocalServices',
+					timeout: 5000,
+					encoding: null,
+					json: true,
+				}, function (error, response, body) {
+					if (error || response.statusCode != 200 || !body) {
+						almanac.log.warn('VL', 'Error ' + (response ? response.statusCode : 0) + ' proxying to LinkSmart!');
 						almanac.basicHttp.serve503(req, res);
+					} else {
+						almanac.basicHttp.serveJson(req, res, {
+								amount: body && body.VirtualAddresses ? Object.keys(body.VirtualAddresses).length : 0,
+							});
 					}
-				}
-			}).pipe(res, {
-				end: true,
-			});
+				});
+
+		} else {
+
+			almanac.request({
+					method: req.method,
+					url: url,
+					timeout: 20000,
+				}, function (error, response, body) {
+					if (error || response.statusCode != 200 || !body) {
+						almanac.log.warn('VL', 'Error ' + (response ? response.statusCode : 0) + ' proxying to LinkSmart!');
+						if (!body) {
+							almanac.basicHttp.serve503(req, res);
+						}
+					}
+				}).pipe(res, {
+					end: true,
+				});
+
+		}
 	}
 
 	almanac.routes['tunnel/'] = proxyNetworkManagerTunnel;	//Proxying to NetworkManager tunnel
 	almanac.routes['linksmart/'] = proxyLinksmart;	//Proxying to LinkSmart Network
-	almanac.openPaths['/linksmart/GetNetworkManagerStatus?method=getLocalServices'] = true;
+	almanac.openPaths['/linksmart/'] = true;
 };

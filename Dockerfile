@@ -30,6 +30,11 @@ ENV SCRAL_URL=http://localhost:8080/connectors.rest/ \
     DFM_URL=http://localhost:8319/ \
     SANTANDER_URL=http://data.smartsantander.eu/ISMB/
 
+ENV REQUIRE_AUTHORIZATION=yes \
+    REQUIRE_POLICY=yes
+
+ENV EXPOSE_INTERNAL_STATUS=yes
+
 ENV OPENID_PUBLIC_KEY=""
 
 ENV LOG_LEVEL=debug

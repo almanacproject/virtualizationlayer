@@ -23,16 +23,14 @@ module.exports = function (almanac) {
 		almanac.request({
 				method: req.method,
 				url: url,
-				timeout: 25000,
+				timeout: 30000,
 				encoding: null,
-			}, function (error, response, body) {
-				if (error || response.statusCode != 200 || !body) {
-					almanac.log.warn('VL', 'Error ' + (response ? response.statusCode : 0) + ' proxying to StorageManager! ' + error + ' @ ' + url);
-					if (!body) {
-						almanac.basicHttp.serve503(req, res);
-					}
-				} else if (req.method === 'POST') {
-					almanac.log.verbose('VL', 'POST request forwarded to StorageManager ' + JSON.stringify({response: response}));
+			}).on('error', function (error) {
+				almanac.log.warn('VL', 'Error ' + error + ' proxying to StorageManager! @ ' + url);
+				almanac.basicHttp.serve503(req, res);
+			}).on('response', function (response) {
+				if (!(response && response.statusCode && response.statusCode == 200)) {
+					almanac.log.warn('VL', 'Error response ' + (response ? response.statusCode : 0) + ' proxying to StorageManager! @ ' + url);
 				}
 			}).pipe(res, {
 				end: true,

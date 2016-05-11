@@ -55,6 +55,15 @@ module.exports = function (almanac) {
 					}
 				}
 			});
+		curl.on('error', function (error) {
+				almanac.log.error('VL', 'Error cURL "' + error + '" proxying to Resource Catalogue! @ ' + url);
+				if (needData) {
+					needData = false;
+					almanac.basicHttp.serve503(req, res);
+				} else {
+					res.end();
+				}
+			});
 	}
 
 	almanac.routes['ResourceCatalogue/'] = proxyResourceCatalogue;

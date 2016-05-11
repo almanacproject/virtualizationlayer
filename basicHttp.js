@@ -206,6 +206,33 @@ It is now ' + now.toISOString() + '.\n\
 ');
 	},
 
+	serve413: function (req, res) {
+		if (!res || res.finished) {
+			return;
+		}
+		if (!res.headersSent) {
+			res.writeHead(413, {
+				'Content-Type': 'text/html; charset=UTF-8',
+				'Date': (new Date()).toUTCString(),
+				'Server': basicHttp.serverSignature,
+				'Content-Security-Policy': basicHttp.csp,
+				'Connection': 'close',
+			});
+		}
+		res.end('<!DOCTYPE html>\n\
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en-GB" lang="en-GB">\n\
+<head>\n\
+<meta charset="UTF-8" />\n\
+<title>413 Request Entity Too Large</title>\n\
+</head>\n\
+<body>\n\
+<h1>Request Entity Too Large</h1>\n\
+<p>The amount of data provided in the request exceeds the capacity limit.</p>\n\
+</body>\n\
+</html>\n\
+');
+	},
+
 	serve500: function (req, res, ex) {
 		if (!res || res.finished) {
 			return;

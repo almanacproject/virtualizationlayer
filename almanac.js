@@ -145,33 +145,64 @@ It is now ' + now.toISOString() + '.\n\
 			}, 2000);
 	},
 
+	/**
+	 * Main function to proxy HTTP requests to ALMANAC components.
+	 */
 	proxy: function(req, res, hostUrl, url, targetName, isJson) {
 		if (!hostUrl) {
 			almanac.basicHttp.serve503(req, res);
 			return;
 		}
+
 		var options = {
 				method: req.method,
 				url: hostUrl + url,
 				timeout: almanac.config.proxyTimeoutMs,
 				encoding: null,
 				gzip: true,
+				headers: {},
 			};
-		if (isJson) {
-			options.json = true;
-			options.headers = { 'Accept': 'application/json' };
-		}
-		almanac.request(options)
-			.on('error', function (error) {
-				almanac.log.warn('VL', 'Error ' + error + ' proxying to ' + targetName + '! @ ' + options.url);
-				almanac.basicHttp.serve503(req, res);
-			}).on('response', function (response) {
-				if (!(response && response.statusCode && response.statusCode == 200)) {
-					almanac.log.warn('VL', 'Error response ' + (response ? response.statusCode : 0) + ' proxying to ' + targetName + '! @ ' + options.url);
+
+		var body = '';
+		req.on('data', function (chunk) {
+			if (body.length < almanac.config.maxPostBodyLength) {
+				body += chunk;
+			} else {
+				almanac.log.warn('VL', 'Error ' + req.method + ' payload too large proxying to ' + targetName + '! @ ' + options.url);
+				almanac.basicHttp.serve413(req, res);
+			}
+		});
+
+		req.on('end', function () {
+			if (res.finished) {
+				return;
+			}
+			if (body) {
+				options.body = body;
+				if (req.headers['content-type']) {
+					options.headers['Content-Type'] = req.headers['content-type'];
 				}
-			}).pipe(res, {
-				end: true,
-			});
+			}
+			if (req.headers['accept']) {
+					options.headers['Accept'] = req.headers['accept'];
+				}
+			if (isJson) {
+				options.json = true;
+				options.headers['Accept'] = 'application/json';
+			}
+			almanac.request(options)
+				.on('error', function (error) {
+					almanac.log.warn('VL', 'Error ' + error + ' proxying to ' + targetName + '! @ ' + options.url);
+					almanac.basicHttp.serve503(req, res);
+				}).on('response', function (response) {
+					if (!(response && response.statusCode && response.statusCode == 200)) {
+						almanac.log.warn('VL', 'Error response ' + (response ? response.statusCode : 0) + ' proxying to ' + targetName + '! @ ' + options.url);
+					}
+				}).pipe(res, {
+					end: true,
+				});
+		});
+
 	},
 };
 

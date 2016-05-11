@@ -49,6 +49,9 @@ exports.config = {
 	//Time-out in milliseconds when proxying to ALMANAC components
 	proxyTimeoutMs: process.env.PROXY_TIMEOUT_MS || 60000,
 
+	//Max size in bytes for POST / PUT / PATCH requests
+	maxPostBodyLength: process.env.MAX_POST_BODY_LENGTH || 10485760,
+
 	//{silent, error, warn, http, info, verbose, silly}
 	logLevel: process.env.LOG_LEVEL || 'info',
 

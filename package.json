@@ -1,6 +1,6 @@
 {
 	"name": "almanac-virtualization-layer",
-	"version": "0.6.4",
+	"version": "0.6.5",
 	"license": "Apache-2.0",
 	"author": {
 		"name": "Alexandre Alapetite",
@@ -48,7 +48,7 @@
 		"sub": true
 	},
 	"scripts": {
-		"start": "node ./index.js",
+		"start": "nodejs ./index.js",
 		"lint": "nodejs ./node_modules/.bin/jshint *.js",
 		"pretest": "npm run-script lint"
 	}

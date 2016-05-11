@@ -12,29 +12,7 @@ var xmlWriter = require('xml-writer'),
 module.exports = function (almanac) {
 
 	function proxyStorageManager(req, res) {
-
-		if (!almanac.config.hosts.storageManagerUrl) {
-			almanac.basicHttp.serve503(req, res);
-			return;
-		}
-
-		var url = almanac.config.hosts.storageManagerUrl + req.url;
-
-		almanac.request({
-				method: req.method,
-				url: url,
-				timeout: 30000,
-				encoding: null,
-			}).on('error', function (error) {
-				almanac.log.warn('VL', 'Error ' + error + ' proxying to StorageManager! @ ' + url);
-				almanac.basicHttp.serve503(req, res);
-			}).on('response', function (response) {
-				if (!(response && response.statusCode && response.statusCode == 200)) {
-					almanac.log.warn('VL', 'Error response ' + (response ? response.statusCode : 0) + ' proxying to StorageManager! @ ' + url);
-				}
-			}).pipe(res, {
-				end: true,
-			});
+		almanac.proxy(req, res, almanac.config.hosts.storageManagerUrl, req.url, 'StorageManager', false);
 	}
 
 	// function dmToGeojson(json) {	//Conversion to GeoJSON format (JSON convention for geographic data)

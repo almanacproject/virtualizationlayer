@@ -1,12 +1,13 @@
 # Installation of the Virtualization Layer
 Requires Node.js >= 0.10.40, and NPM 1.4.28+.
+Uses cURL for requests to the Resource Catalogue.
 For MQTT, recommend protocol 3.1.1+ (e.g. Mosquitto version 1.3+).
 
 
 1. See http://nodejs.org.
 	* On Ubuntu 16.04+ or Debian 9+:
 	```sh
-	apt-get install nodejs npm
+	apt-get install nodejs npm curl
 	```
 
 	* Otherwise, use https://github.com/nodesource/distributions

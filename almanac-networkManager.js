@@ -83,26 +83,7 @@ module.exports = function (almanac) {
 	setInterval(updateMqttVirtualAddress, 60000);
 
 	function proxyNetworkManagerTunnel(req, res) {
-		if (!almanac.config.hosts.networkManagerUrl) {
-			almanac.basicHttp.serve503(req, res);
-			return;
-		}
-
-		almanac.request({
-				method: req.method,
-				uri: almanac.config.hosts.networkManagerUrl + 'HttpTunneling/0/' + req.url,
-				timeout: 20000,
-				encoding: null,
-			}, function (error, response, body) {
-				if (error || response.statusCode != 200 || !body) {
-					almanac.log.warn('VL', 'Error ' + (response ? response.statusCode : 0) + ' proxying to NetworkManager tunneling!');
-					if (!body) {
-						almanac.basicHttp.serve503(req, res);
-					}
-				}
-			}).pipe(res, {
-				end: true,
-			});
+		almanac.proxy(req, res, almanac.config.hosts.networkManagerUrl, 'HttpTunneling/0/' + req.url, 'NetworkManager tunneling', false);
 	}
 
 	function proxyLinksmart(req, res) {
@@ -133,22 +114,7 @@ module.exports = function (almanac) {
 				});
 
 		} else {
-
-			almanac.request({
-					method: req.method,
-					url: url,
-					timeout: 20000,
-				}, function (error, response, body) {
-					if (error || response.statusCode != 200 || !body) {
-						almanac.log.warn('VL', 'Error ' + (response ? response.statusCode : 0) + ' proxying to LinkSmart!');
-						if (!body) {
-							almanac.basicHttp.serve503(req, res);
-						}
-					}
-				}).pipe(res, {
-					end: true,
-				});
-
+			almanac.proxy(req, res, almanac.config.hosts.networkManagerUrl, req.url, 'LinkSmart', false);
 		}
 	}
 

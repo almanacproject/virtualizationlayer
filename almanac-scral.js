@@ -9,54 +9,11 @@
 module.exports = function (almanac) {
 
 	function proxyScral(req, res) {
-
-		if (!almanac.config.hosts.scralUrl) {
-			almanac.basicHttp.serve503(req, res);
-			return;
-		}
-
-		var url = almanac.config.hosts.scralUrl + req.url;
-
-		almanac.request({
-				method: req.method,
-				url: url,
-				timeout: 15000,
-				encoding: null,
-			}, function (error, response, body) {
-				if (error || response.statusCode != 200 || !body) {
-					almanac.log.warn('VL', 'Error ' + (response ? response.statusCode : 0) + ' proxying to SCRAL! ' + error + ' @ ' + url);
-					if (!body) {
-						almanac.basicHttp.serve503(req, res);
-					}
-				}
-			}).pipe(res, {
-				end: true,
-			});
+		almanac.proxy(req, res, almanac.config.hosts.scralUrl, req.url, 'SCRAL', false);
 	}
 
 	function proxyScralUi(req, res) {
-
-		if (!almanac.config.hosts.scralUiUrl) {
-			almanac.basicHttp.serve503(req, res);
-			return;
-		}
-
-		var url = almanac.config.hosts.scralUiUrl + req.url;
-
-		almanac.request({
-				method: req.method,
-				url: url,
-				timeout: 15000,
-			}, function (error, response, body) {
-				if (error || response.statusCode != 200 || !body) {
-					almanac.log.warn('VL', 'Error ' + (response ? response.statusCode : 0) + ' proxying to SCRAL GUI! ' + error + ' @ ' + url);
-					if (!body) {
-						almanac.basicHttp.serve503(req, res);
-					}
-				}
-			}).pipe(res, {
-				end: true,
-			});
+		almanac.proxy(req, res, almanac.config.hosts.scralUiUrl, req.url, 'SCRAL GUI', false);
 	}
 
 	almanac.routes['scral/'] = proxyScral;	//Proxying to SCRAL

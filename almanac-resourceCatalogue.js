@@ -6,6 +6,8 @@
 			for the ALMANAC European project http://www.almanac-project.eu
 */
 
+var spawn = require('child_process').spawn;
+
 module.exports = function (almanac) {
 
 	function proxyResourceCatalogue(req, res) {
@@ -15,26 +17,43 @@ module.exports = function (almanac) {
 			return;
 		}
 
-		var url = almanac.config.hosts.recourceCatalogueUrl + req.url;
-
-		almanac.request({
-				method: req.method,
-				url: url,
-				timeout: 30000,
-				encoding: null,
-				headers: {
-					'Accept': 'application/json',
-					'Content-Type': 'application/json',	//For compatibility with Resource Catalogue
-				},
-			}, function (error, response, body) {
-				if (error || response.statusCode != 200 || !body) {
-					almanac.log.warn('VL', 'Error ' + (response ? response.statusCode : 0) + ' proxying to Resource Catalogue! ' + error + ' @ ' + url);
-					if (!body) {
+		/**
+		 * cURL is used due to TCP socket problems for the Resource Catalogue running Mono.
+		 * It looks from WireShark that Resource Catalogue sends some strange TCP packets back,
+		 * such as a FIN before having received the HTTP request.
+		 * It was working more or less with Node.JS 0.10.x, but not with Node.JS 4.x+.
+		 */
+		var url = almanac.config.hosts.recourceCatalogueUrl + req.url,
+			needData = true,
+			curl = spawn('curl', [
+				'-s',
+				'-m', Math.round(almanac.config.proxyTimeoutMs / 1000),
+				'-H', 'Content-Type: application/json',	//Work-around bug in Resource Catalogue
+				'-H', 'Accept: application/json',
+				url,
+			]);
+		curl.stdout.on('data', function (data) {
+				if (needData) {
+					needData = false;
+					res.writeHead(200, { 'Content-Type': 'application/json' });
+				}
+				res.write(data);	//TODO: Try to use pipe instead (must work also in the case of errors)
+			});
+		curl.stdout.on('end', function () {
+				if (!needData) {
+					res.end();
+				}
+			});
+		curl.on('close', function (code) {
+				if (code) {
+					almanac.log.warn('VL', 'Error cURL response ' + code + ' proxying to Resource Catalogue! @ ' + url);
+					if (needData) {
+						needData = false;
 						almanac.basicHttp.serve503(req, res);
+					} else {
+						res.end();
 					}
 				}
-			}).pipe(res, {
-				end: true,
 			});
 	}
 

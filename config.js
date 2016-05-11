@@ -46,6 +46,9 @@ if (!openIdPublicKey) {
 exports.config = {
 	hosts: hosts,
 
+	//Time-out in milliseconds when proxying to ALMANAC components
+	proxyTimeoutMs: process.env.PROXY_TIMEOUT_MS || 60000,
+
 	//{silent, error, warn, http, info, verbose, silly}
 	logLevel: process.env.LOG_LEVEL || 'info',
 

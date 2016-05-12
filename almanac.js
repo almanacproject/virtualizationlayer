@@ -160,7 +160,9 @@ It is now ' + now.toISOString() + '.\n\
 				timeout: almanac.config.proxyTimeoutMs,
 				encoding: null,
 				gzip: true,
-				headers: {},
+				headers: {
+					'Connection': 'close',
+				},
 			};
 
 		var body = '';
@@ -198,6 +200,16 @@ It is now ' + now.toISOString() + '.\n\
 				}).on('response', function (response) {
 					if (!(response && response.statusCode && response.statusCode == 200)) {
 						almanac.log.warn('VL', 'Error response ' + (response ? response.statusCode : 0) + ' proxying to ' + targetName + '! @ ' + options.url);
+					}
+					if (response && response.socket) {
+						response.socket.on('end', function () {
+								almanac.log.silly('VL', 'Socket ended for ' + targetName + ' @ ' + options.url);
+								res.end();
+							});
+						response.socket.on('close', function () {
+								almanac.log.silly('VL', 'Socket closed for ' + targetName + ' @ ' + options.url);
+								res.end();
+							});
 					}
 				}).pipe(res, {
 					end: true,

@@ -190,6 +190,7 @@ It is now ' + now.toISOString() + '.\n\
 				options.json = true;
 				options.headers['Accept'] = 'application/json';
 			}
+			almanac.log.info('VL', 'Proxying @ ' + options.url);
 			almanac.request(options)
 				.on('error', function (error) {
 					almanac.log.warn('VL', 'Error ' + error + ' proxying to ' + targetName + '! @ ' + options.url);

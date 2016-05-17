@@ -32,7 +32,18 @@ var server = http.createServer(function (req, res) {
 	} catch (ex) {
 		almanac.log.error('VL', 'Node.js: Log exception: %s', ex);
 	}
+
 	var reqUrl0 = '';	//Original request URL
+	function requestServed() {
+		try {
+			req.url = reqUrl0;
+			basicHttp.log(req, res);
+		} catch (ex) {
+			almanac.log.error('VL', 'Log exception: %s', ex);
+		}
+	}
+
+	var asyncRequest = false;
 	try {
 		if (req && req.url) {
 			reqUrl0 += req.url;
@@ -49,9 +60,12 @@ var server = http.createServer(function (req, res) {
 			if (almanac.routes[s1]) {
 				req.url = req.url.substring(s1.length + 1);
 				if (config.requireAuthorization && !almanac.openPaths[reqUrl0]) {
-					almanac.jwtVerifyAuthorization(req, res, function (jwt) {
-							almanac.log.info('VL', 'JWT: ' + JSON.stringify(jwt));
-							almanac.routes[s1](req, res);
+					asyncRequest = true;
+					almanac.jwtVerifyAuthorization(req, res, function (err, jwt) {
+							if (!err) {
+								almanac.routes[s1](req, res);
+							}
+							requestServed();
 						});
 				} else {
 					almanac.routes[s1](req, res);
@@ -73,11 +87,8 @@ var server = http.createServer(function (req, res) {
 		almanac.log.error('VL', 'Exception: ' + ex);
 		basicHttp.serve500(req, res, 'Exception: ' + ex);
 	}
-	try {
-		req.url = reqUrl0;
-		basicHttp.log(req, res);
-	} catch (ex) {
-		almanac.log.error('VL', 'Log exception: %s', ex);
+	if (!asyncRequest) {
+		requestServed();
 	}
 });
 

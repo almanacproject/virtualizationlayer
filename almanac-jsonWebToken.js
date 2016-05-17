@@ -10,7 +10,7 @@ var jwt = require('jsonwebtoken');
 
 module.exports = function (almanac) {
 
-	almanac.jwtVerifyAuthorization = function (req, res, successCallback) {
+	almanac.jwtVerifyAuthorization = function (req, res, callback) {
 		if (req && req.headers && req.headers.authorization) {
 			var token = req.headers.authorization;
 			if (token.length) {
@@ -24,9 +24,12 @@ module.exports = function (almanac) {
 						}, function(err, decoded) {
 							if (err) {
 								almanac.basicHttp.serve401(req, res, 'Bearer realm="' + almanac.config.hosts.instanceName + '", error="invalid_token", error_description="' + err + '"', err);
+							} else if (decoded) {
+								almanac.log.info('VL', 'JWT: ' + JSON.stringify(decoded));
 							} else {
-								successCallback(decoded);
+								err = 'Invalid decoded JWT!';
 							}
+							callback(err, decoded);
 						});
 					return;
 				}

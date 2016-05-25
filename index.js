@@ -6,6 +6,8 @@
 			for the ALMANAC European project http://www.almanac-project.eu
 */
 
+Error.stackTraceLimit = 50;
+
 var http = require('http'),
 	fs = require('fs'),
 	basicHttp = require('./basicHttp.js').basicHttp,	//Static files, logs
@@ -45,6 +47,11 @@ var server = http.createServer(function (req, res) {
 
 	var asyncRequest = false;
 	try {
+		if (res) {
+			res.on('error', function (err) {
+					almanac.log.error('VL', 'Internal response error: ' + err);
+				});
+		}
 		if (req && req.url) {
 			reqUrl0 += req.url;
 			var urlSegments = req.url.split('/', 3),

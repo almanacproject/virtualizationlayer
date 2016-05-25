@@ -1,6 +1,6 @@
 {
 	"name": "almanac-virtualization-layer",
-	"version": "0.6.12",
+	"version": "0.6.14",
 	"license": "Apache-2.0",
 	"author": {
 		"name": "Alexandre Alapetite",
@@ -32,7 +32,7 @@
 		"ws": "0.8.1",
 		"mqtt": "1.8.0",
 		"node-ssdp": "2.7.0",
-		"request": "2.71.0",
+		"request": "2.72.0",
 		"jsonwebtoken": "5.7.0",
 		"xml-writer": "1.6.0",
 		"atom-writer": "1.1.2",

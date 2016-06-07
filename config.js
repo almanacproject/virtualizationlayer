@@ -37,9 +37,45 @@ var hosts = {
 var openIdPublicKey = process.env.OPENID_PUBLIC_KEY;
 if (!openIdPublicKey) {
 	try {
-		openIdPublicKey = fs.readFileSync('./certificates/public.pem').toString();
+		openIdPublicKey = fs.readFileSync('./certificates/openIdPublicKey.pem').toString();
 	} catch (ex) {
+		openIdPublicKey = '';
 		console.error('Error while loading OpenID public key: ' + ex);
+	}
+}
+
+var tlsClientCa = [];
+for (var i = 1; i <= 4; i++) {
+	var tlsClientCaI = process.env['TLS_CLIENT_CA_' + i];
+	if (!tlsClientCaI) {
+		try {
+			tlsClientCaI = fs.readFileSync('./certificates/tlsClientCa' + i + '.pem').toString();
+			console.log('TLS client CA loaded: ./certificates/tlsClientCa' + i + '.pem');
+		} catch (ex) {
+		}
+	}
+	if (tlsClientCaI) {
+		tlsClientCa.push(tlsClientCaI);
+	}
+}
+
+var tlsClientCert = process.env.TLS_CLIENT_CERT;
+if (!tlsClientCert) {
+	try {
+		tlsClientCert = fs.readFileSync('./certificates/tlsClientCert.pem').toString();
+	} catch (ex) {
+		tlsClientCert = '';
+		console.error('Error while loading TLS client certificate: ' + ex);
+	}
+}
+
+var tlsClientKey = process.env.TLS_CLIENT_KEY;
+if (!tlsClientKey) {
+	try {
+		tlsClientKey = fs.readFileSync('./certificates/tlsClientKey.pem').toString();
+	} catch (ex) {
+		tlsClientKey = '';
+		console.error('Error while loading TLS client key: ' + ex);
 	}
 }
 
@@ -63,6 +99,12 @@ exports.config = {
 
 	//Public key of the OpenID Connect server, to validate the signature of the authorization token
 	openIdPublicKey: openIdPublicKey || '',
+
+	//Information for TLS client security
+	tlsClientCa: tlsClientCa || '',
+	tlsClientCert: tlsClientCert || '',
+	tlsClientKey: tlsClientKey || '',
+	tlsClientPassphrase: process.env.TLS_CLIENT_PASSPHRASE || '',
 
 	//Enforces that requests must have a valid authorization token
 	requireAuthorization: (process.env.REQUIRE_AUTHORIZATION || 'yes') === 'yes',

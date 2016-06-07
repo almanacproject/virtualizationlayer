@@ -14,6 +14,7 @@ var almanac = {
 	server: null,
 	version: '0',
 	request: require('request'),
+	defaultRequest: null,
 	os: require('os'),
 
 	openRoutes: {	//Routing of requests which do not need security
@@ -121,6 +122,16 @@ It is now ' + now.toISOString() + '.\n\
 		almanac.basicHttp.serverSignature = 'ALMANAC VirtualizationLayer ' + almanac.version + ' / ' + almanac.basicHttp.serverSignature;
 		almanac.basicHttp.csp = "default-src 'self'; connect-src 'self' ws:; font-src 'self' fonts.gstatic.com; style-src 'self' fonts.googleapis.com";	//TODO: Reduce white-list
 
+		almanac.defaultRequest = almanac.request.defaults({
+				ca: almanac.config.tlsClientCa,
+				cert: almanac.config.tlsClientCert,
+				key: almanac.config.tlsClientKey,
+				passphrase: almanac.config.tlsClientPassphrase,
+				timeout: almanac.config.proxyTimeoutMs,
+				encoding: null,
+				gzip: true,
+			});
+
 		almanac.openRoutes['virtualizationLayerInfo'] = almanac.serveInfo;	//Requests the public address of this VirtualizationLayer instance and other info
 		if (almanac.config.exposeInternalStatus) {
 			almanac.routes['internalStatus'] = almanac.serveInternalStatus;	//Provides all kinds of info on the internal ALMANAC platform
@@ -157,9 +168,6 @@ It is now ' + now.toISOString() + '.\n\
 		var options = {
 				method: req.method,
 				url: hostUrl + url,
-				timeout: almanac.config.proxyTimeoutMs,
-				encoding: null,
-				gzip: true,
 				headers: {
 					'Connection': 'close',
 				},
@@ -193,7 +201,7 @@ It is now ' + now.toISOString() + '.\n\
 				options.headers['Accept'] = 'application/json';
 			}
 			almanac.log.info('VL', 'Proxying @ ' + options.url);
-			almanac.request(options)
+			almanac.defaultRequest(options)
 				.on('error', function (error) {
 					almanac.log.warn('VL', 'Error ' + error + ' proxying to ' + targetName + '! @ ' + options.url);
 					almanac.basicHttp.serve503(req, res);

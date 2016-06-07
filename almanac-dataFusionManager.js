@@ -18,11 +18,9 @@ module.exports = function (almanac) {
 		var url = almanac.config.hosts.dfmUrl + req.url;
 
 		function responseInjectAmount(json) {
-			almanac.request({
+			almanac.defaultRequest({
 					method: req.method,
 					url: url + 'statement/',
-					timeout: almanac.config.proxyTimeoutMs,
-					encoding: null,
 					json: true,
 				}, function (error, response, body) {
 					if (!json.status) {
@@ -38,11 +36,9 @@ module.exports = function (almanac) {
 
 		if (req.url === '') {
 
-			almanac.request({
+			almanac.defaultRequest({
 					method: req.method,
 					url: url,
-					timeout: almanac.config.proxyTimeoutMs,
-					encoding: null,
 					json: true,
 				}, function (error, response, body) {
 					if (error || response.statusCode != 200 || !body) {

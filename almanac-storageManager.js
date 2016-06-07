@@ -171,10 +171,9 @@ module.exports = function (almanac) {
 
 	function proxyStorageManagerToFormat(req, res, format) {
 		var url = almanac.config.hosts.storageManagerUrl + req.url;
-		almanac.request({
+		almanac.defaultRequest({
 				method: req.method,
 				url: url,
-				timeout: 25000,
 			}, function (error, response, body) {
 				if (error || response.statusCode != 200 || !body) {
 					almanac.log.warn('VL', 'Error ' + (response ? response.statusCode : 'undefined') + ' proxying to StorageManager!');

@@ -23,10 +23,9 @@ module.exports = function (almanac) {
 			json.vlInstance = almanac.config.hosts.virtualizationLayerPublicUrl;
 
 			function postToPeer(peer) {
-				almanac.request.post({
+				almanac.defaultRequest.post({
 						url: peer + 'mqttPeering/',
 						json: json,
-						timeout: 15000,
 					}, function (error, response, body) {
 						if (error || !response || response.statusCode != 200) {
 							almanac.log.warn('VL', 'Error ' + (response ? response.statusCode : 'undefined') + ' while forwarding MQTT to ' + peer);

@@ -156,7 +156,7 @@ module.exports = function (almanac) {
 			return;
 		}
 		lastReqIds[json.payload.reqId] = true;
-		almanac.request.get({
+		almanac.defaultRequest.get({
 				url: almanac.config.hosts.virtualizationLayer.scheme + '://' + almanac.config.hosts.virtualizationLayer.host + ':' + almanac.config.hosts.virtualizationLayer.port + '/' + json.payload.uri,
 				json: true,
 				timeout: 10000,

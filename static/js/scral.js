@@ -4,7 +4,7 @@
 var scral_url = "./scral";
 var dfm_url = "./dfm";
 var network_manager_url = "./linksmart/";
-var storage_manager_url = "./sm/";
+var storage_manager_url = "./sm/Datastreams?$top=1";
 var resource_catalog_url = "./ResourceCatalogue/";
 var dfl_url = "./dfl/api/data-fusion/v0.5.0/chains/";
 
@@ -270,27 +270,39 @@ function getNetworkManagerStatus() {
 //--------- END Network Manager ----------
 
 //----------- Storage Manager ----------
+function storageManagerUp() {
+	if ($("#storageManagerStatus").text()=="Offline")
+		incActiveServices();
+	$("#storageManagerStatus").text("Online");
+	//set the class
+	$("#storageManagerStatus").removeClass("label-danger");
+	$("#storageManagerStatus").addClass("label-success");
+}
+function storageManagerUpDown() {
+	if ($("#storageManagerStatus").text()=="Online")
+		decActiveServices();
+	$("#storageManagerStatus").text("Offline");
+	//set the class
+	$("#storageManagerStatus").addClass("label-danger");
+	$("#storageManagerStatus").removeClass("label-success");
+}
+
 function getStorageManagerStatus() {
 	$.ajax({
 		url : storage_manager_url,
 		type : "GET",
 		crossDomain : true,
 		success : function(data) {
-			console.log(data);
-			if ($("#storageManagerStatus").text()=="Offline")
-				incActiveServices();
-			$("#storageManagerStatus").text("Online");
-			//set the class
-			$("#storageManagerStatus").removeClass("label-danger");
-			$("#storageManagerStatus").addClass("label-success");
+			if (data && data.iotCount) {
+				console.log("Storage Manager IoT count: " + data.iotCount);
+				storageManagerUp();
+			} else {
+				console.log(data);
+				storageManagerUpDown();
+			}
 		},
 		error : function() {
-			if ($("#storageManagerStatus").text()=="Online")
-				decActiveServices();
-			$("#storageManagerStatus").text("Offline");
-			//set the class
-			$("#storageManagerStatus").addClass("label-danger");
-			$("#storageManagerStatus").removeClass("label-success");
+			storageManagerUpDown();
 		}
 	});
 }

@@ -4,7 +4,7 @@
 var scral_url = "./scral";
 var dfm_url = "./dfm";
 var network_manager_url = "./linksmart/";
-var storage_manager_url = "./sm/Datastreams?$top=1";
+var storage_manager_url = "./sm/Datastreams?$top=0";
 var resource_catalog_url = "./ResourceCatalogue/";
 var dfl_url = "./dfl/api/data-fusion/v0.5.0/chains/";
 
@@ -36,7 +36,7 @@ $(document).ready(function() {
 		getResourceCatalogStatus();
 		getMqttState();
 		getDFLStatus();
-	}, 5000);
+	}, 10000);
 });
 
 // ------- Active services ---------------
@@ -285,6 +285,7 @@ function storageManagerUpDown() {
 	//set the class
 	$("#storageManagerStatus").addClass("label-danger");
 	$("#storageManagerStatus").removeClass("label-success");
+	$("#smDatastreamCount").text("0");
 }
 
 function getStorageManagerStatus() {
@@ -292,18 +293,20 @@ function getStorageManagerStatus() {
 		url : storage_manager_url,
 		type : "GET",
 		crossDomain : true,
-		success : function(data) {
-			if (data && data.iotCount) {
-				console.log("Storage Manager IoT count: " + data.iotCount);
+		success : function(jsonData) {
+			if (jsonData && jsonData.iotCount) {
+				console.log("Storage Manager IoT count: " + jsonData.iotCount);
 				storageManagerUp();
+				$("#smDatastreamCount").text("" + (jsonData ? +jsonData.iotCount : 0));
 			} else {
-				console.log(data);
+				console.log(jsonData);
 				storageManagerUpDown();
 			}
 		},
 		error : function() {
+			console.log('getStorageManagerStatus error');
 			storageManagerUpDown();
-		}
+		},
 	});
 }
 //--------- END Storage Manager  ----------

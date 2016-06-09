@@ -12,7 +12,34 @@ var xmlWriter = require('xml-writer'),
 module.exports = function (almanac) {
 
 	function proxyStorageManager(req, res) {
-		almanac.proxy(req, res, almanac.config.hosts.storageManagerUrl, req.url, 'StorageManager', false);
+
+		if (!almanac.config.hosts.storageManagerUrl) {
+			almanac.basicHttp.serve503(req, res);
+			return;
+		}
+
+		if (req.url === 'status') {
+			var url = almanac.config.hosts.storageManagerUrl + 'Datastreams?$top=0';
+			almanac.defaultRequest({
+					method: req.method,
+					url: url,
+					json: true,
+					headers: {
+						'Connection': 'close',
+					},
+				}, function (error, response, body) {
+					if (error || response.statusCode != 200 || !body) {
+						almanac.log.warn('VL', 'Error ' + (response ? response.statusCode : 0) + ' proxying to Storage Manager! ' + error + ' @ ' + url);
+						almanac.basicHttp.serve503(req, res);
+					} else {
+						almanac.basicHttp.serveJson(req, res, {
+								iotCount: +body.iotCount,
+							});
+					}
+				});
+		} else {
+			almanac.proxy(req, res, almanac.config.hosts.storageManagerUrl, req.url, 'StorageManager', false);
+		}
 	}
 
 	// function dmToGeojson(json) {	//Conversion to GeoJSON format (JSON convention for geographic data)
@@ -234,4 +261,6 @@ module.exports = function (almanac) {
 	almanac.routes['sm-tsv/'] = function (req, res) { proxyStorageManagerToFormat(req, res, 'tsv'); };	//Conversion of Storage Manager JSON to TXT
 	almanac.routes['sm-csv/'] = function (req, res) { proxyStorageManagerToFormat(req, res, 'csv'); };	//Conversion of Storage Manager JSON to TXT
 	almanac.openPaths['/sm/'] = true;
+	almanac.openPaths['/sm/status'] = true;
+	almanac.openPaths['/sm/Datastreams?$top=0'] = true;
 };

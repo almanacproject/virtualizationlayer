@@ -266,18 +266,19 @@ It is now ' + now.toISOString() + '.\n\
 	},
 
 	serve503: function (req, res) {
-		if (!res || res.finished) {
+		if (!res) {
 			return;
 		}
-		if (!res.headersSent) {
+		if (res.finished || res.headersSent) {
+			res.end();
+		} else {
 			res.writeHead(503, {
 				'Content-Type': 'text/html; charset=UTF-8',
 				'Date': (new Date()).toUTCString(),
 				'Server': basicHttp.serverSignature,
 				'Content-Security-Policy': basicHttp.csp,
 			});
-		}
-		res.end('<!DOCTYPE html>\n\
+			res.end('<!DOCTYPE html>\n\
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en-GB" lang="en-GB">\n\
 <head>\n\
 <meta charset="UTF-8" />\n\
@@ -289,6 +290,7 @@ It is now ' + now.toISOString() + '.\n\
 </body>\n\
 </html>\n\
 ');
+		}
 	},
 
 	serveStaticFile: function (req, res) {
@@ -306,18 +308,18 @@ It is now ' + now.toISOString() + '.\n\
 				if ((!err) && stats.isFile()) {
 					var ext = path.extname(myPath),
 						mimes = {
-							'.css': 'text/css',
-							'.html': 'text/html',
+							'.css': 'text/css; charset=UTF-8',
+							'.html': 'text/html; charset=UTF-8',
 							'.ico': 'image/x-icon',
 							'.jpg': 'image/jpeg',
-							'.js': 'application/javascript',
-							'.json': 'application/json',
+							'.js': 'application/javascript; charset=UTF-8',
+							'.json': 'application/json; charset=UTF-8',
 							'.mp3': 'audio/mpeg',
 							'.png': 'image/png',
-							'.svg': 'image/svg+xml',
-							'.txt': 'text/plain',
+							'.svg': 'image/svg+xml; charset=UTF-8',
+							'.txt': 'text/plain; charset=UTF-8',
 							'.woff': 'application/font-woff',
-							'.xml': 'application/xml',
+							'.xml': 'application/xml; charset=UTF-8',
 						},
 						modifiedDate = new Date(stats.mtime).toUTCString();
 					if (modifiedDate === req.headers['if-modified-since']) {

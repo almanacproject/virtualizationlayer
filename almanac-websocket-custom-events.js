@@ -1,6 +1,6 @@
 "use strict";
 /*
-	Virtualization Layer | WebSocket module
+	Virtualization Layer | WebSocket custom events module
 		by Alexandre Alapetite http://alexandre.alapetite.fr
 			from Alexandra Institute http://www.alexandra.dk
 			for the ALMANAC European project http://www.almanac-project.eu

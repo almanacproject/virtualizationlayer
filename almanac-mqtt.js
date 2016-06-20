@@ -86,6 +86,7 @@ module.exports = function (almanac) {
 				payload: payload,
 				clientInfo: clientInfo,
 				info: {
+					federated: true,
 					instanceName: almanac.config.hosts.instanceName,
 					virtualAddress: almanac.virtualAddress,
 					randomId: almanac.randomId,

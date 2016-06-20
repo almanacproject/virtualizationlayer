@@ -1,6 +1,6 @@
 "use strict";
 /*
-	Virtualization Layer | WebSocket module
+	Virtualization Layer | WebSocket federated chat module
 		by Alexandre Alapetite http://alexandre.alapetite.fr
 			from Alexandra Institute http://www.alexandra.dk
 			for the ALMANAC European project http://www.almanac-project.eu
@@ -50,11 +50,29 @@ module.exports = function (almanac) {
 					try {
 						var client = wsClients[clientId] || {};
 						var payload = JSON.parse(data);
-						if (payload && almanac.mqttClient) {
-							almanac.mqttClient.broadcastChat(payload, {
-									remoteAddress: client.remoteAddress,
-									remotePort: client.remotePort,
-								});
+						if (payload) {
+							if (almanac.mqttClient && almanac.mqttClient.connected) {
+								almanac.mqttClient.broadcastChat(payload, {
+										remoteAddress: client.remoteAddress,
+										remotePort: client.remotePort,
+									});
+							} else {	//MQTT not available: will only broadcast to local WebSocket clients
+								almanac.webSocketChat.broadcast({
+										date: Date.now(),
+										type: 'CHAT',
+										payload: payload,
+										clientInfo: {
+											remoteAddress: client.remoteAddress,
+											remotePort: client.remotePort,
+										},
+										info: {
+											federated: false,	//Federated chat requires MQTT
+											instanceName: almanac.config.hosts.instanceName,
+											virtualAddress: almanac.virtualAddress,
+											randomId: almanac.randomId,
+										},
+									});
+							}
 						}
 					} catch (ex) {
 						almanac.log.warn('VL', 'WebSocket chat: invalid message from client #: ' + clientId + ': ' + ex);

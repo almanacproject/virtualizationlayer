@@ -74,7 +74,7 @@ module.exports = function (almanac) {
 		//TODO: Check that it comes from an authorised peer
 		if (req.method !== 'GET') {
 			almanac.basicHttp.serve405(req, res, 'GET');
-		} else if (!almanac.mqttClient || !almanac.mqttClient.broadcastDistributedRequest) {
+		} else if (!almanac.mqttClient || !almanac.mqttClient.connected || !almanac.mqttClient.broadcastDistributedRequest) {
 			almanac.basicHttp.serve503(req, res);
 		} else {
 			var reqId = Date.now() + '_' + Math.random();
@@ -147,7 +147,7 @@ module.exports = function (almanac) {
 	};
 
 	almanac.replyToDistributedRequest = function (json) {
-		if (!(almanac.mqttClient && almanac.mqttClient.broadcastDistributedResponse && json.payload && json.payload.reqId)) {
+		if (!(almanac.mqttClient && almanac.mqttClient.connected && almanac.mqttClient.broadcastDistributedResponse && json.payload && json.payload.reqId)) {
 			return;
 		}
 		if (lastReqIds[json.payload.reqId]) {

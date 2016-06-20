@@ -133,7 +133,7 @@ It is now ' + now.toISOString() + '.\n\
 			});
 
 		almanac.openRoutes['virtualizationLayerInfo'] = almanac.serveInfo;	//Requests the public address of this VirtualizationLayer instance and other info
-		if (almanac.config.exposeInternalStatus) {
+		if (almanac.config.exposeInternalStatus && almanac.config.exposeInternalStatus !== 'no') {
 			almanac.routes['internalStatus'] = almanac.serveInternalStatus;	//Provides all kinds of info on the internal ALMANAC platform
 		}
 

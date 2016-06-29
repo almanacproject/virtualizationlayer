@@ -120,7 +120,7 @@ It is now ' + now.toISOString() + '.\n\
 	init: function() {
 		almanac.basicHttp.npmlogPrefix = 'VL';
 		almanac.basicHttp.serverSignature = 'ALMANAC VirtualizationLayer ' + almanac.version + ' / ' + almanac.basicHttp.serverSignature;
-		almanac.basicHttp.csp = "default-src 'self'; connect-src 'self' ws:; font-src 'self' fonts.gstatic.com; style-src 'self' fonts.googleapis.com";	//TODO: Reduce white-list
+		almanac.basicHttp.csp = "default-src 'self'; connect-src 'self' ws: wss:; font-src 'self' fonts.gstatic.com; style-src 'self' fonts.googleapis.com";	//TODO: Reduce white-list
 
 		almanac.defaultRequest = almanac.request.defaults({
 				ca: almanac.config.tlsClientCa,

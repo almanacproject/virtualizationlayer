@@ -10,30 +10,6 @@
 <h1>WebSocket chat console</h1>
 <p>Shows the broadcast chat messages in the JavaScript console.</p>
 
-<script>
-"use strict";
-
-try {
-	var webSocket = new WebSocket('ws://' + location.host + '/ws/chat');
-
-	webSocket.onerror = function (event) {
-			console.log('WebSocket error: ' + JSON.stringify(event));
-		};
-
-	webSocket.onopen = function () {
-			console.log('WebSocket connected');
-		};
-
-	webSocket.onclose = function () {
-			console.log('WebSocket closed');
-		};
-
-	webSocket.onmessage = function (event) {
-			console.log('WebSocket message: ' + event.data);
-		};
-} catch (ex) {
-	console.log('Exception: ' + ex.message);
-}
-</script>
+<script src="js/console.js"></script>
 </body>
 </html>

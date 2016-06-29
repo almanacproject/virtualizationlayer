@@ -17,7 +17,7 @@ function append(text) {
 }
 
 try {
-	var webSocket = new WebSocket('ws://' + location.host + '/ws/chat');
+	var webSocket = new WebSocket((location.protocol === 'https:' ? 'wss://' : 'ws://') + location.host + '/ws/chat');
 
 	webSocket.onerror = function (event) {
 			append('Error: ' + JSON.stringify(event));

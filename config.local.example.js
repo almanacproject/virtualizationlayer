@@ -7,7 +7,7 @@
 
 var hosts = {
 		instanceName: 'YourPlace',	//Name of the instance in the federation
-		virtualizationLayerPublicUrl: 'http://example.net/',	//Public URL of this Virtualization Layer, if any
+		virtualizationLayerPublicUrl: 'https://example.net/',	//Public URL of this Virtualization Layer, if any
 		virtualizationLayer: {
 			port: 80,
 		},

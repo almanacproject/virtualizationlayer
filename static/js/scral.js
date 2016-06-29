@@ -120,7 +120,7 @@ function fillCountDevice(count) {
 function websocketSetUp()
 {
 	try {
-	var webSocket = new WebSocket('ws://' + location.host + '/ws/custom-events');
+	var webSocket = new WebSocket((location.protocol === 'https:' ? 'wss://' : 'ws://') + location.host + '/ws/custom-events');
 
 	webSocket.onerror = function (event) {
 			console.log('WebSocket error: ' + JSON.stringify(event));

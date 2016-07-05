@@ -1,4 +1,14 @@
-# Installation of the Virtualization Layer
+# Docker image
+The recommended way to install/deploy the Virtualization Layer is via its Docker image:
+https://hub.docker.com/r/almanacproject/virtualizationlayer/
+
+# Deployment
+Either after using Docker (above) or a manual installation (below),
+it is good to put a reverse proxy in front of the Virtualization Layer for adding a layer of security, with TLS for HTTPS and Secure WebSocket.
+We suggest using the open source https://traefik.io/
+See https://github.com/almanacproject/almanacdeployment/blob/master/docker-compose.ssl.lab.yml
+
+# Manual Installation of the Virtualization Layer
 Requires Node.js >= 0.10.40, and NPM 1.4.28+.
 Uses cURL for requests to the Resource Catalogue.
 For MQTT, recommend protocol 3.1.1+ (e.g. Mosquitto version 1.3+).
@@ -22,7 +32,13 @@ cd /opt/virtualization-layer/
 
 3. Deploy the VirtualizationLayer source-code
 
-4. Use `npm` to fetch the librairies and dependencies automatically:
+```sh
+git clone https://github.com/almanacproject/virtualizationlayer
+```
+
+A suggestion of path is to put it in `/opt/virtualization-layer/`
+
+4. Use `npm` to fetch the libraries and dependencies automatically:
 
 For a production deployment:
 
@@ -54,6 +70,7 @@ npm test
 
 
 # Running the Virtualization Layer
+If you are not using Docker, then there is a number of alternatives.
 
 ## Either manually:
 
@@ -109,35 +126,37 @@ service virtualization-layer restart
 
 ## Pages
 
-* Information about the instance: /virtualizationLayerInfo
-* More technical information about the instance: /internalStatus
+* Public information about the instance: /virtualizationLayerInfo
+* More internal information about the instance: /internalStatus
 * List of known instances in the federation: /distributedInstances
-* WebSocket HTML+JavaScript chat demo: /socket.html
-* WebSocket JavaScript chat demo: /console.html
-* Test JSON Web Token decoding: /jwt.decode/eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJmb28iOiJiYXIiLCJpYXQiOjE0MzcwMTg1ODIsImV4cCI6MTQzNzAxODU4M30.NmMv7sXjM1dW0eALNXud8LoXknZ0mH14GtnFclwJv0s
-* Test JSON Web Token verifying: /jwt.verify/eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiYWRtaW4iOnRydWUsImF1ZCI6IkNvcGVuaGFnZW4ifQ.RgBsgsm75Df5FhReDpH0yrLw5lvtTe87AgskTPEm36pYEhXcXCW07S5Y85VRc7cVx5McQHmFPo08q1eKRTEXLKfEwCl6Q1f61Kj5Zm2ZcLOvVU2S3ZFdrLePxAuON9Q7W2u4uy8NYr9S9fV1hsmHpaI1pLRfknFFadgJgR5PJgo
+* WebSocket HTML+JavaScript federated chat, for debugging federation aspects: /socket.html
+* WebSocket JavaScript console, showing the activity of the local MQTT broker: /console.html
+* Test JSON Web Token decoding (does not check the signature): /jwt.decode/eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJmb28iOiJiYXIiLCJpYXQiOjE0MzcwMTg1ODIsImV4cCI6MTQzNzAxODU4M30.NmMv7sXjM1dW0eALNXud8LoXknZ0mH14GtnFclwJv0s
+* Test JSON Web Token verifying (check the signature): /jwt.verify/eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiYWRtaW4iOnRydWUsImF1ZCI6IkNvcGVuaGFnZW4ifQ.RgBsgsm75Df5FhReDpH0yrLw5lvtTe87AgskTPEm36pYEhXcXCW07S5Y85VRc7cVx5McQHmFPo08q1eKRTEXLKfEwCl6Q1f61Kj5Zm2ZcLOvVU2S3ZFdrLePxAuON9Q7W2u4uy8NYr9S9fV1hsmHpaI1pLRfknFFadgJgR5PJgo
 
 ## HTTP Proxying + Format conversion
 
 * Proxy to Network Manager tunnelling: /tunnel/0.0.0.8917820598345047854 (change the virtual address)
-* Proxy to Resource Catalogue: /ResourceCatalogue/ using Resource Catalogue API
+* Proxy to Resource Catalogue: /ResourceCatalogue/ using the Resource Catalogue API
 	* E.g. /ResourceCatalogue/ogc/Things?%24filter=thingid%20eq%20c26958ce0b98584b3558fc9a3621c2b1541cee4a7685c2d68c741875740bfa1a
-* Proxy to Storage Manager: /sm/ using Storage Manager API
+* Proxy to Storage Manager: /sm/ using the Storage Manager API
 	* E.g. /sm/DataStreams%28ab1db42dea1bcdcb03f61b2a47ada8a77955715abe9bbed6611d82ba5ffa3570%29/Observations/$current
-	* Format conversion to ATOM (RSS): /sm-rss/ using Storage Manager API
-	* Format conversion to CSV: /sm-csv/ using Storage Manager API
-	* Format conversion to TSV: /sm-tsv/ using Storage Manager API
-* Proxy to SCRAL: /scral/devices using SCRAL API
-* Proxy to SmartSantander: /santander/GetNodes using SmartSantander API
+	* Format conversion to ATOM (RSS): /sm-rss/ using the Storage Manager API for observations
+	* Format conversion to CSV: /sm-csv/ using the Storage Manager API for observations
+	* Format conversion to TSV: /sm-tsv/ using the Storage Manager API for observations
+* Proxy to SCRAL: /scral/ using the SCRAL API
+	* E.g. /scral/devices
+* Proxy to SmartSantander: /santander/ using SmartSantander API
+	* E.g. /santander/GetNodes
 
 ## Distributed HTTP requests
 
-* Distributed Resource Catalogue request (using default merging strategy): /distributed/ResourceCatalogue/
+* Distributed Resource Catalogue request (using default merging strategy = split): /distributed/ResourceCatalogue/
 	* E.g. /distributed/ResourceCatalogue/ogc/Things?%24filter=thingid%20eq%20c26958ce0b98584b3558fc9a3621c2b1541cee4a7685c2d68c741875740bfa1a
 * Distributed Resource Catalogue request (using split strategy = details grouped per instance): /distributed-split/ResourceCatalogue/
 	* E.g. /distributed-split/ResourceCatalogue/ogc/Things?%24filter=thingid%20eq%20c26958ce0b98584b3558fc9a3621c2b1541cee4a7685c2d68c741875740bfa1a
-* Distributed Resource Catalogue request (using merge strategy = results fusionned just like if they came from one single request): /distributed-merge/ResourceCatalogue/
-	* Assume JSON responses using `{"Thing":[ ]}` format
+* Distributed Resource Catalogue request (using merge strategy = results merged just like if they came from one single request): /distributed-merge/ResourceCatalogue/
+	* Assume JSON responses using the OGC `{"Thing":[ ]}` format
 	* E.g. /distributed-merge/ResourceCatalogue/ogc/Things?%24filter=thingid%20eq%20c26958ce0b98584b3558fc9a3621c2b1541cee4a7685c2d68c741875740bfa1a
 
 ## WebSocket

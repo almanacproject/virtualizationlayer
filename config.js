@@ -27,6 +27,7 @@ var hosts = {
 		storageManagerUrl: process.env.STORAGE_MANAGER_URL || 'http://cnet006.cloudapp.net/Dmf/SensorThings/',
 		dfmUrl: process.env.DFM_URL || 'http://localhost:8319/',
 		santanderUrl: process.env.SANTANDER_URL || 'http://data.smartsantander.eu/ISMB/',
+		noderedUrl: process.env.NODERED_URL || 'http://localhost:1880/',
 		virtualizationLayerPeers: [	//Manual peering (sends the local MQTT events to other VirtualizationLayers
 			//'http://almanac.alexandra.dk/',	//Alexandra Institute (Ubuntu)
 			//'http://p2.alapetite.dk/',	//Alexandra Institute (Raspberry Pi)

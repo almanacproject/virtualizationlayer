@@ -23,7 +23,7 @@ var almanac = {
 	routes: {	//Routing of requests which need security / authorization / policy
 	},
 
-	openPaths: {	//White-list of paths, which do not need security
+	openPaths: {	//White-list of paths in existing non-open routes, which do not need security
 	},
 
 	serveHome: function (req, res) {
@@ -73,6 +73,7 @@ It is now ' + now.toISOString() + '.\n\
 			scralUiUrlOk: !!almanac.config.hosts.scralUiUrl,
 			dfmUrlOk: !!almanac.config.hosts.dfmUrl,
 			dflUrlOk: !!almanac.config.hosts.dflUrl,
+			noderedUrlOk: !!almanac.config.hosts.noderedUrl,
 			//server: almanac.basicHttp.serverSignature,
 			authorizationOk: almanac.config.openIdPublicKey && almanac.config.requireAuthorization && almanac.config.requirePolicy,
 			randomId: almanac.randomId,
@@ -96,6 +97,7 @@ It is now ' + now.toISOString() + '.\n\
 			scralUiUrl: almanac.config.hosts.scralUiUrl,
 			dfmUrl: almanac.config.hosts.dfmUrl,
 			dflUrl: almanac.config.hosts.dflUrl,
+			noderedUrl: almanac.config.hosts.noderedUrl,
 			server: almanac.basicHttp.serverSignature,
 			openIdPublicKey: almanac.config.openIdPublicKey,
 			requireAuthorization: almanac.config.requireAuthorization,
@@ -143,6 +145,7 @@ It is now ' + now.toISOString() + '.\n\
 		require('./almanac-scral.js')(almanac);
 		require('./almanac-dataFusionManager.js')(almanac);
 		require('./almanac-dataFusionLanguage.js')(almanac); // DFL- API
+		require('./almanac-nodered.js')(almanac);
 		require('./almanac-santander.js')(almanac);
 		require('./almanac-distributed.js')(almanac);	//Distributed requests
 		require('./almanac-websocket-custom-events.js')(almanac);	//WebSocket for custom events (from MQTT)
@@ -195,6 +198,9 @@ It is now ' + now.toISOString() + '.\n\
 			}
 			if (req.headers['accept']) {
 					options.headers['Accept'] = req.headers['accept'];
+				}
+			if (req.headers['authorization'] && req.headers['authorization'].toLowerCase().startsWith('basic')) {
+					options.headers['Authorization'] = req.headers['authorization'];
 				}
 			if (isJson) {
 				options.json = true;

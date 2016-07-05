@@ -29,6 +29,7 @@ module.exports = function (almanac) {
 							} else {
 								err = 'Invalid decoded JWT!';
 							}
+							req.headers.authorization = '';
 							callback(err, decoded);
 						});
 					return;

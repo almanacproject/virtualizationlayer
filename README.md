@@ -6,9 +6,10 @@ https://hub.docker.com/r/almanacproject/virtualizationlayer/
 Either after using Docker (above) or a manual installation (below),
 it is good to put a reverse proxy in front of the Virtualization Layer for adding a layer of security, with TLS for HTTPS and Secure WebSocket.
 We suggest using the open source https://traefik.io/
+
 See https://github.com/almanacproject/almanacdeployment/blob/master/docker-compose.ssl.lab.yml
 
-# Manual Installation of the Virtualization Layer
+# Manual installation of the Virtualization Layer
 Requires Node.js >= 0.10.40, and NPM 1.4.28+.
 Uses cURL for requests to the Resource Catalogue.
 For MQTT, recommend protocol 3.1.1+ (e.g. Mosquitto version 1.3+).
@@ -148,6 +149,8 @@ service virtualization-layer restart
 	* E.g. /scral/devices
 * Proxy to SmartSantander: /santander/ using SmartSantander API
 	* E.g. /santander/GetNodes
+* Proxy to Node-RED: /nodered/ using Node-RED Web UI and password protection
+
 
 ## Distributed HTTP requests
 

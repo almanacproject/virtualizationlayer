@@ -37,7 +37,7 @@
 		"xml-writer": "1.6.0",
 		"atom-writer": "1.1.2",
 		"npmlog": "2.0.3",
-		"extend": "3.0.0"
+		"extend": "3.0.2"
 	},
 	"devDependencies": {
 		"jshint": "2.9.1"
